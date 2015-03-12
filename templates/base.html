@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Записки на память</title>
+    {% assets "scss_all" %}
+        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+    {% endassets %}
+</head>
+<body>
+    <nav>
+            <a href="/">На главную</a>
+            <a href="/about/">О проекте</a>
+            <a href="/rss/">RSS</a>
+            <a href="/contacts/">Контакты</a>
+    </nav>
+<div class="container">
+        {% block page_header %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
+

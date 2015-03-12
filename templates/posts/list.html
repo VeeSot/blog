@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for post in posts %}
+        <div class="post">
+                {% if post.img %}
+                    <img  src="{{ post.img }}">
+                {% else %}
+                    <img  src="/static/img/nof.png">
+                {% endif %}
+           <div class="overview">
+                        <h2><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h2>
+                        {{ post.slug|truncate(100) }}<br><br>
+                        {% with total=post.comments|length %}
+                               {{ total }} comment {%- if total > 1 %}s{%- endif -%}
+                        {% endwith %}
+            </div>
+            <time>{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
+        </div>
+    {% endfor %}
+{% endblock %}
