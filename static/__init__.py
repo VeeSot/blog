@@ -1,6 +1,5 @@
-from distutils import dirname
 from main import blog
-from os.path import abspath
+from os.path import abspath, dirname
 
 from flask.ext.assets import Environment, Bundle
 
