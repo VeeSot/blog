@@ -2,3 +2,4 @@ static/.webassets-cache
 env
 *pyc
 .idea
+static/css
