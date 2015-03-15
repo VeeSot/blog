@@ -8,7 +8,6 @@ blog = Flask(__name__)
 
 blog.config["MONGODB_SETTINGS"] = {'DB': "blog"}
 blog.config["SECRET_KEY"] = "9885c535484942f17e08370161a108b0"
-
 db = MongoEngine(blog)
 
 
@@ -19,11 +18,14 @@ def register_blueprints(blog):
     from about.views import about
     from contacts.views import contacts
     from rss.views import rss
+    from auth.views import auth
+
     blog.register_blueprint(contacts)
     blog.register_blueprint(posts)
     blog.register_blueprint(admin)
     blog.register_blueprint(about)
     blog.register_blueprint(rss)
+    blog.register_blueprint(auth)
 
 
 register_blueprints(blog)
