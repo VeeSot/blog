@@ -43,7 +43,7 @@ class Detail(MethodView):
             post = Post.objects.get_or_404(slug=slug)
             # Handle old posts types as well
             cls = post.__class__ if post.__class__ != Post else BlogPost
-            form_cls = model_form(cls, exclude=('created_at', 'comments'))
+            form_cls = model_form(cls, exclude=('created_at', 'comments', 'img'))
             if request.method == 'POST':
                 form = form_cls(request.form, inital=post._data)
             else:
