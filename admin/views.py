@@ -6,7 +6,7 @@ import os
 from static import ABS_IMG_PATH, REAL_IMG_PATH
 
 from auth.views import requires_auth
-from models.models import Post, BlogPost
+from posts.models import Post, BlogPost
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = REAL_IMG_PATH
