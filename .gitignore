@@ -3,3 +3,4 @@ env
 *pyc
 .idea
 static/style.css
+main/local_setting.py

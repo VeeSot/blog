@@ -3,15 +3,10 @@ from flask.views import MethodView
 from flask.ext.mongoengine.wtf import model_form
 from main import app
 import os
-from static import ABS_IMG_PATH, REAL_IMG_PATH
-
+from main import ABS_IMG_PATH
 from auth.views import requires_auth
 from posts.models import Post, BlogPost
 from werkzeug.utils import secure_filename
-
-UPLOAD_FOLDER = REAL_IMG_PATH
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 admin = Blueprint('admin', __name__, template_folder='templates')
 

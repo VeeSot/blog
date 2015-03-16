@@ -1,8 +1,9 @@
-from flask.views import MethodView
 from functools import wraps
+
+from flask.views import MethodView
 from flask.ext.mongoengine.wtf import model_form
 from flask import request, render_template, Blueprint, redirect, abort, session, make_response
-from models.models import User, SessionStorage
+from auth.models import User, SessionStorage
 from mongoengine import DoesNotExist
 
 
