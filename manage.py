@@ -1,6 +1,6 @@
 # Set the path
 import sys
-from main import blog
+from main import app
 
 import os
 from flask.ext.script import Manager, Server
@@ -8,7 +8,7 @@ from flask.ext.script import Manager, Server
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-manager = Manager(blog)
+manager = Manager(app)
 
 # Turn on debugger by default and reloader
 manager.add_command("runserver", Server(

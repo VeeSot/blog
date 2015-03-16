@@ -1,4 +1,4 @@
-from main import blog
+from main import app
 from os.path import abspath, dirname
 
 from flask.ext.assets import Environment, Bundle
@@ -6,7 +6,7 @@ from flask.ext.assets import Environment, Bundle
 ROOT_PATH = dirname(dirname(abspath(__file__)))  # Main root dir
 STATIC_ROOT = ROOT_PATH + '/static'
 
-assets = Environment(blog)
+assets = Environment(app)
 # New setting for static files
 assets.app.root_path = ROOT_PATH
 assets.directory = STATIC_ROOT
