@@ -1,9 +1,8 @@
-from functools import wraps
-
 from flask.views import MethodView
+from functools import wraps
 from flask.ext.mongoengine.wtf import model_form
 from flask import request, render_template, Blueprint, redirect, abort, session, make_response
-from auth.models import User, SessionStorage
+from .models import User, SessionStorage
 from mongoengine import DoesNotExist
 
 
@@ -51,10 +50,10 @@ class UserAuth(MethodView):
                 return abort(401)
 
     @staticmethod
-    def user_exist():
+    def is_admin():
         if 'session_id' in request.cookies:
             session_id = request.cookies['session_id']
-            return SessionStorage.objects.filter(session_key=session_id)
+            return bool(SessionStorage.objects.filter(session_key=session_id))
         else:
             return False
 
@@ -62,7 +61,7 @@ class UserAuth(MethodView):
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not UserAuth.user_exist():
+        if not UserAuth.is_admin():
             return redirect('auth')
         return f(*args, **kwargs)
 

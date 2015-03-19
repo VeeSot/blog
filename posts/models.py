@@ -32,8 +32,27 @@ class Post(db.DynamicDocument):
 class Comment(db.EmbeddedDocument):
     created_at = db.DateTimeField(default=datetime.datetime.now, required=True)
     author = db.StringField(verbose_name="Ваше имя", max_length=255, required=True)
-    email = db.EmailField(verbose_name="Ваше email(будет скрыт от просмотра,нужен для обратной связи с автором)")
+    email = db.EmailField(verbose_name="Ваш email(будет скрыт от просмотра,нужен для обратной связи с автором)")
     body = db.StringField(verbose_name="Комментарий", required=True)
+    public = db.BooleanField(verbose_name="Опубликовать", default=False)
+
+    @staticmethod
+    def get(post, created_at):
+        """"
+        Args:
+            post (Post): Post for comment
+            created_at (str): timestamp created comment
+
+        Returns:
+            Comment: needed comment
+        """
+        comments = post.comments
+        for comment in comments:
+            if str(comment.created_at) == created_at:
+                return comment
+
+    def __unicode__(self):
+        return self.created_at
 
 
 class BlogPost(Post):

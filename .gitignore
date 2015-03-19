@@ -4,3 +4,5 @@ env
 .idea
 static/style.css
 main/local_setting.py
+static/img/*
+!static/img/nof.png

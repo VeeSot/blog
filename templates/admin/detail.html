@@ -12,12 +12,10 @@
 
     <form action="" method="post" enctype="multipart/form-data">
         {{ forms.render(form) }}
-         <div class="clearfix ">
                     <label for="file">Файл</label>
                     <div class="input">
                             <input id="file" name="file" type="file">
                     </div>
-                </div>
         <div class="actions">
             <input type="submit" class="btn primary" value="save">
             <a href="{{ url_for("admin.index") }}" class="btn secondary">Cancel</a>

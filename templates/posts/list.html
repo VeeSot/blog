@@ -10,9 +10,10 @@
            <div class="overview">
                         <h2><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h2>
                         {{ post.slug|truncate(100) }}<br><br>
-                        {% with total=post.comments|length %}
+                        {#{% with total=post.comments|length %}
+                        TODO:Make counte public comment
                                {{ total }} comment {%- if total > 1 %}s{%- endif -%}
-                        {% endwith %}
+                        {% endwith %}#}
             </div>
             <time>{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
         </div>

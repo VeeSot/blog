@@ -4,7 +4,7 @@
             {% if field.type in ['CSRFTokenField', 'HiddenField'] %}
                 {{ field() }}
             {% else %}
-                <div class="clearfix {% if field.errors %}error{% endif %}">
+                {% if field.errors %}{% endif %}
                     {{ field.label }}
                     <div class="input">
                         {% if field.name == "body" %}
@@ -13,16 +13,13 @@
                             {{ field() }}
                         {% endif %}
                         {% if field.errors or field.help_text %}
-                            <span class="help-inline">
                                 {% if field.errors %}
                                     {{ field.errors|join(' ') }}
                                 {% else %}
                                     {{ field.help_text }}
                                 {% endif %}
-                            </span>
                         {% endif %}
                     </div>
-                </div>
             {% endif %}
         {% endfor %}
     </fieldset>

@@ -1,10 +1,32 @@
+from auth.views import UserAuth
 from flask import Blueprint, request, redirect, render_template, url_for
+import flask
 from flask.views import MethodView
 from flask.ext.mongoengine.wtf import model_form
+from main import app
 from .models import Post, Comment
 
 
 posts = Blueprint('posts', __name__, template_folder='templates')
+
+
+@app.route('/api/v1/comment/public', methods=["POST"])
+def public_comment():
+    """
+    Make comment (un)visible for all
+    Returns:
+        json: Notify about current status comment
+    """
+    if UserAuth.is_admin() and 'created_at' in request.form and 'post_title' in request.form:
+        post_title = request.form['post_title']
+        created_at = request.form['created_at']
+        post = Post.objects.get(title=post_title)
+        comment = Comment.get(post, created_at)
+        comment.public = not comment.public  # Inverse current status
+        post.save()
+        return flask.jsonify({'status': 'success'})
+    else:
+        return flask.jsonify({'status': 'fail'})
 
 
 class ListView(MethodView):
@@ -14,15 +36,17 @@ class ListView(MethodView):
 
 
 class DetailView(MethodView):
-    form = model_form(Comment, exclude=['created_at'])
+    form = model_form(Comment, exclude=['created_at', 'public'])
 
     def get_context(self, slug):
         post = Post.objects.get_or_404(slug=slug)
         form = self.form(request.form)
+        admin = UserAuth.is_admin()
 
         context = {
             "post": post,
-            "form": form
+            "form": form,
+            "admin": admin
         }
         return context
 
