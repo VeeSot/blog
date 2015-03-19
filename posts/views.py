@@ -1,6 +1,5 @@
 from auth.views import UserAuth
-from flask import Blueprint, request, redirect, render_template, url_for
-import flask
+from flask import Blueprint, request, redirect, render_template, url_for, jsonify, flash
 from flask.views import MethodView
 from flask.ext.mongoengine.wtf import model_form
 from main import app
@@ -24,9 +23,9 @@ def public_comment():
         comment = Comment.get(post, created_at)
         comment.public = not comment.public  # Inverse current status
         post.save()
-        return flask.jsonify({'status': 'success'})
+        return jsonify({'status': 'success'})
     else:
-        return flask.jsonify({'status': 'fail'})
+        return jsonify({'status': 'fail'})
 
 
 class ListView(MethodView):
@@ -65,6 +64,7 @@ class DetailView(MethodView):
             post = context.get('post')
             post.comments.append(comment)
             post.save()
+            flash('Thank you for your comment.It will be published after checking')
 
             return redirect(url_for('posts.detail', slug=slug))
         return render_template('posts/detail.html', **context)

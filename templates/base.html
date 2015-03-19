@@ -16,6 +16,15 @@
             <a href="/contacts/">Контакты</a>
     </nav>
 <div class="container">
+              {% with msgs = get_flashed_messages() %}
+                {% if msgs %}
+                  {%- for msg in msgs %}
+                    <div class="message">
+                      {{ msg }}
+                    </div>
+                  {% endfor -%}
+                {% endif %}
+              {% endwith %}
         {% block page_header %}{% endblock %}
         {% block content %}{% endblock %}
     </div>
