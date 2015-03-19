@@ -51,6 +51,23 @@ class Comment(db.EmbeddedDocument):
             if str(comment.created_at) == created_at:
                 return comment
 
+    @staticmethod
+    def delete(post, created_at):
+        """"
+        Removing specified comment
+        Args:
+            post (Post): Post for comment
+            created_at (str): timestamp created comment
+
+        """
+        comments = post.comments
+        for comment in comments:
+            if str(comment.created_at) == created_at:
+                comments.remove(comment)
+                post.save()
+                return
+
+
     def __unicode__(self):
         return self.created_at
 

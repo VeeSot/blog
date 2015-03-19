@@ -12,24 +12,28 @@
         <h4>Комментарии</h4>
         {% for comment in post.comments %}
             {% if comment.public %}
-                <div class="comment">
+                <div class="comment" id="{{ comment.created_at }}">
                     <span class="author">{{ comment.author }}</span>
                     <time>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
                     <div class="body">{{ comment.body }}</div>
-                {% if admin %}
-                    <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="publicComment(this)"
-                    value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
-                {% endif %}
+                    {% if admin %}
+                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="publicComment(this)"
+                        value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
+                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="deleteComment(this)"
+                        value="Delete" type="button">
+                    {% endif %}
                 </div>
             {% elif admin and not comment.public %}
-                <div class="comment">
+                <div class="comment" id="{{ comment.created_at }}">
                     <span class="author">{{ comment.author }}</span>
                     <time>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
                     <div class="body">{{ comment.body }}</div>
-                                {% if admin %}
-                    <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="publicComment(this)"
-                    value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
-                {% endif %}
+                    {% if admin %}
+                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="publicComment(this)"
+                        value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
+                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="deleteComment(this)"
+                        value="Delete" type="button">
+                    {% endif %}
                 </div>
             {% endif %}
         {% endfor %}
