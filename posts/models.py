@@ -1,3 +1,5 @@
+import json
+
 __author__ = 'veesot'
 
 import datetime
@@ -17,6 +19,25 @@ class Post(db.DynamicDocument):
 
     def __unicode__(self):
         return self.title
+
+    @classmethod
+    def get_json_with_field(cls, *args):
+        """"
+        Возвращает json-представление только с выбраными полями
+        Args:args(tuple): Кортеж со строковыми представлениями названий полей
+        """
+        json_present = []
+        all_posts = cls.objects
+        for post in all_posts:
+            listing = {}
+            for field in args:
+                try:
+                    # Используем принудительное преобразование в строку,чтобы избежать проблем с конвертацией в json
+                    listing[field] = str(post[field])
+                except KeyError:  # Иногда бывает что ключа нет в определеном экземпляре.Нестрогая модель Mongo DB
+                    listing[field] = ''
+            json_present.append(listing)
+        return json.dumps(json_present)
 
     @property
     def post_type(self):
@@ -66,7 +87,6 @@ class Comment(db.EmbeddedDocument):
                 comments.remove(comment)
                 post.save()
                 return
-
 
     def __unicode__(self):
         return self.created_at

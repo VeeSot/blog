@@ -5,3 +5,4 @@ mongoengine
 flask_mongoengine
 Flask-Assets
 Flask-Session
+Flask-Scss
