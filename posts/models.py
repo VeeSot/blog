@@ -37,7 +37,7 @@ class Post(db.DynamicDocument):
                 except KeyError:  # Иногда бывает что ключа нет в определеном экземпляре.Нестрогая модель Mongo DB
                     listing[field] = ''
             json_present.append(listing)
-        return json.dumps(json_present)
+        return json_present
 
     @property
     def post_type(self):

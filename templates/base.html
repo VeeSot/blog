@@ -6,7 +6,8 @@
     {% assets "scss_all" %}
         <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
     {% endassets %}
-    <script src="/static/js/script.js"></script>
+    {% block js_header %}
+    {% endblock %}
 </head>
 <body>
     <nav>

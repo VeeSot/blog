@@ -1,5 +1,6 @@
+import json
 from auth.views import UserAuth
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, Response
 from main import app
 from posts.models import Post, Comment
 
@@ -14,7 +15,7 @@ class ApiPost():
         Return all post
         """
         posts_as_json = Post.get_json_with_field('title', 'img', 'slug', 'created_at')
-        return jsonify({'posts': posts_as_json})
+        return Response(json.dumps(posts_as_json), mimetype='application/json')  # jsonify - don correct fot this case!
 
 
 class ApiComment():
