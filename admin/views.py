@@ -47,7 +47,7 @@ class Detail(MethodView):
             # Determine which post type we need
             cls = self.class_map.get(request.args.get('type', 'post'))
             post = cls()
-            form_cls = model_form(cls, exclude=('created_at', 'comments'))
+            form_cls = model_form(cls, exclude=('created_at', 'comments', 'img'))
             form = form_cls(request.form)
         context = {
             "post": post,

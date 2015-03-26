@@ -9,6 +9,10 @@
     {% endassets %}
 {% endblock %}
 {%- block topbar -%}
-    <h2><a href="{{ url_for('admin.index') }}" class="brand">Admin</a></h2>
-    <a href="{{ url_for("admin.create", type='post') }}">New post</a>
+    {% if request.endpoint != 'admin.index' %}{# Visible only not  admin-index #}
+        <a href="{{ url_for('admin.index') }}" class="btn">Admin-panel</a>
+    {% endif %}
+    {% if request.endpoint != 'admin.create' %}{# InVisible for  post create page #}
+        <a href="{{ url_for("admin.create", type='post') }}" class="btn">New post</a>
+    {% endif %}
 {%- endblock -%}

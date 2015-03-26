@@ -32,21 +32,29 @@ body {
       display: inline-block;
       fieldset {
         border: none;
-        padding: 10px;
+        margin: 0;
+        padding: 0;
       }
-      textarea#body, input {
+      textarea#body,input,label{
         resize: none;
-        border-radius: 0.3em;
-      }
-      .btn {
-        background: $thirdColor;
-        color: #ffffff;
         margin: 10px;
-        padding: 10px;
+        border-radius: 0.1em;
       }
     }
+    a.btn,input.btn {
+        border: none;
+        text-decoration: none;
+        font-weight: 400;
+        font-size: 1.1em;
+        border-radius: 0.1em;
+        background: $thirdColor;
+        color: #ffffff;
+        margin: 10px 0px 10px 10px;
+        padding: 10px;
+        display: inline-block;
+      }
   }
-  h2, h3, h4, h5 {
+  h3, h4, h5 {
     margin: 0 0 10px;
     display: inline-block;
   }

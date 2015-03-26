@@ -18,7 +18,10 @@
             <!--<a href="/rss/">RSS</a>-->
             <a href="/contacts/">Контакты</a>
     </nav>
+
 <div class="container">
+              {%- block topbar -%}
+              {% endblock %}
               {% with msgs = get_flashed_messages() %}
                 {% if msgs %}
                   {%- for msg in msgs %}
