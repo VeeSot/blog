@@ -1,0 +1,101 @@
+$primaryLink: #3084BF;
+$secondaryColor: #104F7C;
+$thirdColor: #62ABDF;
+$fourColor: #98d1f8;
+$backGroundColor: #fafafa;
+$blockColor: #fff;
+$textColor: #444444;
+$lightGrey: #e0e0e0;
+
+body {
+  background-color: $backGroundColor;
+  color: $textColor;
+  margin: 10px;
+  a {
+    color: $primaryLink;
+  }
+  nav {
+    text-align: right;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: $blockColor;
+    a {
+      margin: 10px;
+    }
+  }
+  .container {
+    background: $blockColor;
+    padding: 20px;
+    form {
+      background: $backGroundColor;
+      border: 1px solid $lightGrey;
+      display: inline-block;
+      fieldset {
+        border: none;
+        padding: 10px;
+      }
+      textarea#body, input {
+        resize: none;
+        border-radius: 0.3em;
+      }
+      .btn {
+        background: $thirdColor;
+        color: #ffffff;
+        margin: 10px;
+        padding: 10px;
+      }
+    }
+  }
+  h2, h3, h4, h5 {
+    margin: 0 0 10px;
+    display: inline-block;
+  }
+
+  .post {
+    border-top: 3px solid $thirdColor;
+    border-left: 1px solid $lightGrey;
+    border-right: 1px solid $lightGrey;
+    border-bottom: 1px solid $lightGrey;
+  }
+  .comment {
+    border: 1px solid $lightGrey;
+  }
+
+  .post, .comment {
+    background: $backGroundColor;
+    margin-bottom: 20px;
+    padding: 10px;
+    overflow-wrap: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    hyphens: manual;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    time {
+      float: right;
+    }
+    img{
+      width: 200px;
+      height: 150px;
+    }
+    .body {
+      border-top: $lightGrey 1px solid;
+      padding-top: 10px;
+      margin: 10px;
+    }
+    .overview{
+      display:inline-block;
+      vertical-align: top;
+      padding-left: 10px;
+      h2{
+        display: block;
+      }
+    }
+  }
+  .message{
+    padding: 10px;
+    margin-bottom: 10px;
+    background: $fourColor;
+  }
+}
