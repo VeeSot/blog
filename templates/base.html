@@ -18,7 +18,6 @@
             <!--<a href="/rss/">RSS</a>-->
             <a href="/contacts/">Контакты</a>
     </nav>
-
 <div class="container">
               {%- block topbar -%}
               {% endblock %}
@@ -34,6 +33,11 @@
         {% block page_header %}{% endblock %}
         {% block content %}{% endblock %}
     </div>
+    <footer>
+    {% block js_footer %}{# JS script for analitics,visor,etc #}
+    {% endblock %}
+    </footer>
 </body>
+
 </html>
 

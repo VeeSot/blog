@@ -2,6 +2,7 @@ from os.path import dirname, abspath
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.assets import Environment, Bundle
+from third_party import COUNTERS
 
 
 app = Flask(__name__)
@@ -30,6 +31,7 @@ ABS_IMG_PATH = '/static/img/'
 REAL_IMG_PATH = ROOT_PATH + ABS_IMG_PATH
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = REAL_IMG_PATH
+app.config['COUNTERS'] = COUNTERS
 
 
 def register_blueprints(app):

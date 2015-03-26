@@ -52,3 +52,8 @@
         <input type="submit" class="btn" value="Отправить">
     </form>
 {% endblock %}
+    {% block js_footer %}
+        {% for counter in config.COUNTERS%}
+            {{ counter|safe }}
+        {% endfor %}
+    {% endblock %}
