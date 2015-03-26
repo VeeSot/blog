@@ -2,7 +2,7 @@ static/.webassets-cache
 env
 *pyc
 .idea
-static/style.css
+static/css
 main/local_setting.py
 static/img/*
 !static/img/nof.png

@@ -16,9 +16,15 @@ assets = Environment(app)
 assets.app.root_path = ROOT_PATH
 assets.directory = STATIC_ROOT
 # Sass support + convert into css
-CSS_PATH = ROOT_PATH + '/static/css/'
-scss = Bundle(CSS_PATH + 'posts.scss', filters='pyscss', output='style.css')
-assets.register('scss_all', scss)
+SCSS_PATH = ROOT_PATH + '/static/scss/'
+# Various scss
+glob_css = Bundle(SCSS_PATH + 'global.scss', filters='pyscss', output='css/global.css')
+posts = Bundle(SCSS_PATH + 'posts.scss', filters='pyscss', output='css/posts.css')
+redactor = Bundle(SCSS_PATH + 'redactor.scss', filters='pyscss', output='css/redactor.css')
+# Reg for access from HTML-template
+assets.register('glob_css', glob_css)
+assets.register('posts', posts)
+assets.register('redactor', redactor)
 # Image setting(for upload image)
 ABS_IMG_PATH = '/static/img/'
 REAL_IMG_PATH = ROOT_PATH + ABS_IMG_PATH
