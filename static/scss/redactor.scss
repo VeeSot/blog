@@ -270,6 +270,7 @@ body {
 }
 .redactor_editor {
 	line-height: 1.45em ;
+    min-height: 200px;
 	@extend %extend_1;
 	&:focus {
 		line-height: 1.45em ;
