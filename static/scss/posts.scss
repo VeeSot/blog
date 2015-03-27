@@ -1,14 +1,8 @@
 $backGroundColor: #fafafa;
-$blockColor: #fff;
-$textColor: #444444;
 $lightGrey: #e0e0e0;
 $thirdColor: #62ABDF;
 
-body {
-  background-color: $backGroundColor;
-  color: $textColor;
-  margin: 10px;
-  .post {
+.post {
     border-top: 3px solid $thirdColor;
     border-left: 1px solid $lightGrey;
     border-right: 1px solid $lightGrey;
@@ -17,10 +11,10 @@ body {
       display: inline-block;
     }
   }
-  .comment {
+.comment {
     border: 1px solid $lightGrey;
   }
-  .post, .comment {
+.post, .comment {
     background: $backGroundColor;
     margin-bottom: 20px;
     padding: 10px;
@@ -39,8 +33,9 @@ body {
       height: 150px;
     }
     .body {
-      border-top: $lightGrey 1px solid;
-      padding-top: 10px;
+      border-top: $lightGrey 2px solid;
+      padding: 10px;
+      background: #ffffff;
       margin: 10px;
     }
     .overview{
@@ -52,4 +47,3 @@ body {
       }
     }
   }
-}
