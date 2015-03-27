@@ -20,10 +20,12 @@ assets.directory = STATIC_ROOT
 SCSS_PATH = ROOT_PATH + '/static/scss/'
 # Various scss
 glob_css = Bundle(SCSS_PATH + 'global.scss', filters='pyscss', output='css/global.css')
+hljs = Bundle(SCSS_PATH + 'hljs.scss', filters='pyscss', output='css/hljs.css')
 posts = Bundle(SCSS_PATH + 'posts.scss', filters='pyscss', output='css/posts.css')
 redactor = Bundle(SCSS_PATH + 'redactor.scss', filters='pyscss', output='css/redactor.css')
 # Reg for access from HTML-template
 assets.register('glob_css', glob_css)
+assets.register('hljs', hljs)
 assets.register('posts', posts)
 assets.register('redactor', redactor)
 # Image setting(for upload image)

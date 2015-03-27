@@ -3,9 +3,14 @@
 <head>
     <meta charset="utf-8">
     <title>Записки на память</title>
+    <script src="/static/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     {% block js_header %}
     {% endblock %}
     {% assets "glob_css" %}
+        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+    {% endassets %}
+    {% assets "hljs" %}
         <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
     {% endassets %}
     {% block css_header %}
