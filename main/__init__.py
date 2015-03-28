@@ -45,6 +45,7 @@ def register_blueprints(app):
     from rss.views import rss
     from auth.views import auth
     from api.views import api
+    from service.views import service
 
     app.register_blueprint(contacts)
     app.register_blueprint(posts)
@@ -53,6 +54,7 @@ def register_blueprints(app):
     app.register_blueprint(rss)
     app.register_blueprint(auth)
     app.register_blueprint(api)
+    app.register_blueprint(service)
 
 
 register_blueprints(app)

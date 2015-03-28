@@ -24,7 +24,7 @@ class UserAuth(MethodView):
                 user = User.objects.get(name=username)
                 if user and user.password == password:
                     # prepare response/redirect
-                    response = make_response(redirect('/admin'))
+                    response = make_response(redirect('/panel_control'))
 
                     if 'session' in request.cookies:
                         session_id = request.cookies['session']

@@ -75,6 +75,6 @@ class Detail(MethodView):
         return render_template('admin/detail.html', **context)
 
 
-admin.add_url_rule('/admin/', view_func=List.as_view('index'))
-admin.add_url_rule('/admin/create/', defaults={'slug': None}, view_func=Detail.as_view('create'))
-admin.add_url_rule('/admin/<slug>/', view_func=Detail.as_view('edit'))
+admin.add_url_rule('/panel_control/', view_func=List.as_view('index'))
+admin.add_url_rule('/panel_control/create/', defaults={'slug': None}, view_func=Detail.as_view('create'))
+admin.add_url_rule('/panel_control/<slug>/', view_func=Detail.as_view('edit'))

@@ -9,6 +9,8 @@
                     <div class="input">
                         {% if field.name == "body" %}
                             {{ field(rows=10, cols=100) }}
+                        {% elif field.name == "password"%}
+                            <input id="password" name="password" type="password" value="">{# dirty hack #}
                         {% else %}
                             {{ field() }}
                         {% endif %}
