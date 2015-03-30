@@ -10,7 +10,7 @@
 {% block page_header %}
     <article>
         <h1>{{ post.title }}</h1>
-        <time datetime="{{ post.created_at }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
+        <time datetime="{{ post.created_at.strftime('%Y-%m-%dT%H:%MZ')}}">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
         <div class="body">{{ post.body|safe }}</div>
     </article>
 {% endblock %}
@@ -21,12 +21,12 @@
             {% if comment.public %}
                 <div class="comment">
                     <span class="author">{{ comment.author }}</span>
-                    <time datetime="{{ comment.created_at }}">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
+                    <time datetime="{{ comment.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
                     <div class="body">{{ comment.body }}</div>
             {% elif admin and not comment.public %}
                 <div class="comment">
                     <span class="author">{{ comment.author }}</span>
-                    <time datetime="{{ comment.created_at }}">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
+                    <time datetime="{{ comment.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
                     <div class="body">{{ comment.body }}</div>
             {% endif %}
                 {% if admin %}

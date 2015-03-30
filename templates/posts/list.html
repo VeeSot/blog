@@ -9,7 +9,7 @@
 {% endblock %}
 {% block content %}
     {% for post in posts %}
-        <div class="post">
+        <article>
                 {% if post.img %}
                     <img  src="{{ post.img }}">
                 {% else %}
@@ -23,8 +23,8 @@
                                {{ total }} comment {%- if total > 1 %}s{%- endif -%}
                         {% endwith %}#}
             </div>
-            <time>{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
-        </div>
+            <time datetime="{{ post.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
+        </article>
     {% endfor %}
 {% endblock %}
     {% block js_footer %}
