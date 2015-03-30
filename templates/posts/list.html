@@ -11,9 +11,9 @@
     {% for post in posts %}
         <article>
                 {% if post.img %}
-                    <img  src="{{ post.img }}">
+                    <img  src="{{ post.img }}" alt="{{ post.title }}">
                 {% else %}
-                    <img  src="/static/img/nof.png">
+                    <img  src="/static/img/nof.png" alt="Image not found">
                 {% endif %}
            <div class="overview">
                         <h1><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h1>
