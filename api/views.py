@@ -1,8 +1,10 @@
 import json
+
 from auth.views import UserAuth
 from flask import jsonify, Blueprint, request, Response
 from main import app
 from posts.models import Post, Comment
+
 
 api = Blueprint('api', __name__)
 
@@ -20,23 +22,19 @@ class ApiPost():
 
 class ApiComment():
     @staticmethod
-    @app.route("/api/v1/post/<post_title>/comment/<created_at>", methods=['PUT', 'DELETE'])
-    def public_comment(post_title=None, created_at=None):
+    @app.route("/api/v1/comment/<created_at>", methods=['PUT', 'DELETE'])
+    def public_comment(created_at=None):
         """
         Make comment (un)visible for all
         Returns:
             json: Notify about current status comment
         """
 
-        if UserAuth.is_admin() and not (post_title is None or created_at is None):
+        if UserAuth.is_admin() and not (created_at is None):
             if request.method == 'PUT':
-                post = Post.objects.get(title=post_title)
-                comment = Comment.get(post, created_at)
-                comment.public = not comment.public  # Inverse current status
-                post.save()
+                Comment.change_public_status(created_at)
             elif request.method == 'DELETE':
-                post = Post.objects.get(title=post_title)
-                Comment.delete(post, created_at)
+                Comment.delete(created_at)
             return jsonify({'status': 'success'})
         else:
             return jsonify({'status': 'fail'})

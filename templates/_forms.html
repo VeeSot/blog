@@ -1,5 +1,6 @@
 {% macro render(form) -%}
     <fieldset>
+        <legend>Please fill out the form</legend>
         {% for field in form %}
             {% if field.type in ['CSRFTokenField', 'HiddenField'] %}
                 {{ field() }}

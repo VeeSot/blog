@@ -1,47 +1,41 @@
 {% extends "base.html" %}
-{% block js_header %}<script src="/static/js/posts/list.js"></script>{% endblock %}
+{% block js_header %}<script src="/static/js/posts/list.js"></script>
+<script src="/static/js/jquery.js"></script>{% endblock %}
 {% import "_forms.html" as forms %}
 {% block css_header %}
     {% assets "posts" %}
-        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
 {% endblock %}
 {% block page_header %}
-    <div class="post">
-        <h2>{{ post.title }}</h2>
-        <time>{{ post.created_at.strftime('%H:%M %Y-%m-%d') }}</time>
+    <article>
+        <h1>{{ post.title }}</h1>
+        <time datetime="{{ post.created_at }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
         <div class="body">{{ post.body|safe }}</div>
-    </div>
+    </article>
 {% endblock %}
 {% block content %}
     {% if post.comments %}
         <h4>Комментарии</h4>
         {% for comment in post.comments %}
             {% if comment.public %}
-                <div class="comment" id="{{ comment.created_at }}">
+                <div class="comment">
                     <span class="author">{{ comment.author }}</span>
-                    <time>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
+                    <time datetime="{{ comment.created_at }}">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
                     <div class="body">{{ comment.body }}</div>
-                    {% if admin %}
-                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="publicComment(this)"
-                        value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
-                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="deleteComment(this)"
-                        value="Delete" type="button">
-                    {% endif %}
-                </div>
             {% elif admin and not comment.public %}
-                <div class="comment" id="{{ comment.created_at }}">
+                <div class="comment">
                     <span class="author">{{ comment.author }}</span>
-                    <time>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
+                    <time datetime="{{ comment.created_at }}">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
                     <div class="body">{{ comment.body }}</div>
-                    {% if admin %}
-                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="publicComment(this)"
-                        value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
-                        <input name="{{ post.title }}" id="{{ comment.created_at }}" onclick="deleteComment(this)"
-                        value="Delete" type="button">
-                    {% endif %}
-                </div>
             {% endif %}
+                {% if admin %}
+                    <input  id="{{ comment.created_at }}" onclick="publicComment(this)"
+                    value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
+                    <input  id="{{ comment.created_at }}" onclick="deleteComment(this)"
+                    value="Delete" type="button">
+                {% endif %}
+                </div>
         {% endfor %}
     {% else %}
         <h4>Комментариев пока нет</h4><br>

@@ -2,19 +2,19 @@ $backGroundColor: #fafafa;
 $lightGrey: #e0e0e0;
 $thirdColor: #62ABDF;
 
-.post {
+article {
     border-top: 3px solid $thirdColor;
     border-left: 1px solid $lightGrey;
     border-right: 1px solid $lightGrey;
     border-bottom: 1px solid $lightGrey;
-    h2{
+    h1{
       display: inline-block;
     }
   }
 .comment {
     border: 1px solid $lightGrey;
   }
-.post, .comment {
+article, .comment {
     background: $backGroundColor;
     margin-bottom: 20px;
     padding: 10px;
@@ -42,7 +42,7 @@ $thirdColor: #62ABDF;
       display:inline-block;
       vertical-align: top;
       padding-left: 10px;
-      h2{
+      h1{
         display: block;
       }
     }

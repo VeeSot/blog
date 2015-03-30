@@ -4,7 +4,7 @@
 {% endblock %}
 {% block css_header %}
     {% assets "posts" %}
-        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
 {% endblock %}
 {% block content %}
@@ -16,7 +16,7 @@
                     <img  src="/static/img/nof.png">
                 {% endif %}
            <div class="overview">
-                        <h2><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h2>
+                        <h1><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h1>
                         {{ post.slug|truncate(100) }}<br><br>
                         {#{% with total=post.comments|length %}
                         TODO:Make counte public comment
