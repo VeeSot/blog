@@ -20,7 +20,7 @@ class Rss(MethodView):
         for post in posts:
             feed.add(post.title, post.slug,
                      content_type='html',
-                     url=make_external(post.slug),
+                     url=make_external('post/'+post.slug),
                      updated=post.created_at,
                      published=post.created_at)
         return feed.get_response()
