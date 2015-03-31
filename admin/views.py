@@ -6,6 +6,7 @@ import os
 from main import ABS_IMG_PATH
 from auth.views import requires_auth
 from posts.models import Post, BlogPost
+from tags.models import Tag
 from werkzeug.utils import secure_filename
 
 admin = Blueprint('admin', __name__, template_folder='templates')
@@ -75,6 +76,59 @@ class Detail(MethodView):
         return render_template('admin/detail.html', **context)
 
 
+class ListTags(MethodView):
+    decorators = [requires_auth]
+
+    def get(self):
+        tags = Tag.objects.all()
+        return render_template('admin/tags/list.html', tags=tags)
+
+
+class DetailTag(MethodView):
+    decorators = [requires_auth]
+
+    def get_context(self, title=None):
+        if title:
+            tag = Tag.objects.get_or_404(title=title)
+            cls = tag.__class__
+            form_cls = model_form(cls)
+            if request.method == 'POST':
+                form = form_cls(request.form, inital=tag._data)
+            else:
+                form = form_cls(obj=tag)
+        else:
+            tag = Tag()
+            form_cls = model_form(Tag)
+            form = form_cls(request.form)
+        context = {
+            "tag": tag,
+            "form": form,
+            "create": title is None
+        }
+        return context
+
+    def get(self, title):
+        context = self.get_context(title)
+        return render_template('admin/tags/detail.html', **context)
+
+    def post(self, title):
+        context = self.get_context(title)
+        form = context.get('form')
+
+        if form.validate():
+            tag = context.get('tag')
+            form.populate_obj(tag)
+            tag.save()
+
+            return redirect(url_for('admin.tags'))
+        return render_template('admin/tags/detail.html', **context)
+
+
 admin.add_url_rule('/panel_control/', view_func=List.as_view('index'))
 admin.add_url_rule('/panel_control/create/', defaults={'slug': None}, view_func=Detail.as_view('create'))
 admin.add_url_rule('/panel_control/<slug>/', view_func=Detail.as_view('edit'))
+
+admin.add_url_rule('/panel_control/tags/', view_func=ListTags.as_view('tags'))
+admin.add_url_rule('/panel_control/tags/create/', defaults={'tag_name': None},
+                   view_func=DetailTag.as_view('create_tag'))
+admin.add_url_rule('/panel_control/tags/<title>/', view_func=DetailTag.as_view('edit_tag'))

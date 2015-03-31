@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{# Documents with current tag #}
+{% block content %}
+    <h1>{{tag.title}}</h1>
+    {% for post  in posts %}
+        {{ post.title }}
+    {% endfor %}
+{% endblock %}
+{% block js_footer %}
+    {% for counter in config.COUNTERS%}
+        {{ counter|safe }}
+    {% endfor %}
+{% endblock %}

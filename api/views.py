@@ -23,9 +23,9 @@ class ApiPost():
 class ApiComment():
     @staticmethod
     @app.route("/api/v1/comment/<created_at>", methods=['PUT', 'DELETE'])
-    def public_comment(created_at=None):
+    def change_comment(created_at=None):
         """
-        Make comment (un)visible for all
+        Change comment make (un)visible or remove
         Returns:
             json: Notify about current status comment
         """

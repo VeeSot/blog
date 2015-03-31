@@ -23,11 +23,13 @@ glob_css = Bundle(SCSS_PATH + 'global.scss', filters='pyscss', output='css/globa
 hljs = Bundle(SCSS_PATH + 'hljs.scss', filters='pyscss', output='css/hljs.css')
 posts = Bundle(SCSS_PATH + 'posts.scss', filters='pyscss', output='css/posts.css')
 redactor = Bundle(SCSS_PATH + 'redactor.scss', filters='pyscss', output='css/redactor.css')
+admin = Bundle(SCSS_PATH + 'admin.scss', filters='pyscss', output='css/admin.css')
 # Reg for access from HTML-template
 assets.register('glob_css', glob_css)
 assets.register('hljs', hljs)
 assets.register('posts', posts)
 assets.register('redactor', redactor)
+assets.register('admin', admin)
 # Image setting(for upload image)
 ABS_IMG_PATH = '/static/img/'
 REAL_IMG_PATH = ROOT_PATH + ABS_IMG_PATH
@@ -46,6 +48,7 @@ def register_blueprints(app):
     from auth.views import auth
     from api.views import api
     from service.views import service
+    from tags.views import tags
 
     app.register_blueprint(contacts)
     app.register_blueprint(posts)
@@ -55,6 +58,7 @@ def register_blueprints(app):
     app.register_blueprint(auth)
     app.register_blueprint(api)
     app.register_blueprint(service)
+    app.register_blueprint(tags)
 
 
 register_blueprints(app)

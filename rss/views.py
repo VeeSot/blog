@@ -26,4 +26,4 @@ class Rss(MethodView):
         return feed.get_response()
 
 # Register the urls
-rss.add_url_rule('/rss/', view_func=Rss.as_view('rss'))
+rss.add_url_rule('/rss/', view_func=Rss.as_view('index'))

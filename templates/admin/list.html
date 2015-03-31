@@ -2,13 +2,9 @@
 
 {% block content %}
         {% for post in posts %}
-                <div class="post">
+                <div class="element">
                     <a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a>
-                    <time>{{ post.created_at.strftime('%d-%m-%Y') }}</time>
                     <a href="{{ url_for("admin.edit", slug=post.slug) }}" class="btn">Edit</a>
-                    <!--<a href="
-                        {#{{ url_for("admin.delete", slug=post.slug) }}#}
-                    "class="btn">Delete</a>-->
                 </div>
         {% endfor %}
 {% endblock %}

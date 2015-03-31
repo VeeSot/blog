@@ -7,6 +7,9 @@
     {% assets "redactor" %}
         <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
     {% endassets %}
+    {% assets "admin" %}
+        <link rel="stylesheet" type=text/css href="{{ ASSET_URL }}">
+    {% endassets %}
 {% endblock %}
 {%- block topbar -%}
     {% if request.endpoint != 'admin.index' %}{# Visible only not  admin-index #}
@@ -15,4 +18,5 @@
     {% if request.endpoint != 'admin.create' %}{# InVisible for  post create page #}
         <a href="{{ url_for("admin.create", type='post') }}" class="btn">New post</a>
     {% endif %}
+        <a href="{{ url_for("admin.create_tag", type='tag') }}" class="btn">New tag</a>
 {%- endblock -%}

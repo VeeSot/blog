@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}
+{% block content %}
+        {% for tag in tags %}
+                <div class="view_element">
+                    <a href="{{ url_for("tags.detail", title=tag.title) }}">{{ tag.title }}</a>
+                    <a href="{{ url_for("admin.edit_tag", title=tag.title) }}" class="btn">Edit</a>
+                </div>
+        {% endfor %}
+{% endblock %}

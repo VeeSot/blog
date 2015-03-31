@@ -40,6 +40,7 @@ body {
       background: $backGroundColor;
       border: 1px solid $lightGrey;
       display: inline-block;
+      padding: 10px;
       fieldset {
         border: none;
         margin: 0;
@@ -47,8 +48,10 @@ body {
       }
       textarea#body, input, label {
         resize: none;
-        margin: 10px;
         border-radius: 0.1em;
+      }
+      legend{
+        margin-bottom: 10px;
       }
     }
     a.btn, input.btn {
@@ -59,7 +62,7 @@ body {
       border-radius: 0.1em;
       background: $thirdColor;
       color: #ffffff;
-      margin: 10px 0px 10px 10px;
+      margin: 10px 10px 10px 0px;
       padding: 10px;
       display: inline-block;
     }

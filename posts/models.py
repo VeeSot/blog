@@ -1,5 +1,6 @@
 from collections import namedtuple
 import pymongo
+from tags.models import Tag
 
 __author__ = 'veesot'
 

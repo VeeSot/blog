@@ -19,9 +19,9 @@
 <body>
     <nav>
             <a href="/">На главную</a>
-            <a href="/about/">О проекте</a>
-            <a href="/rss/">RSS</a>
-            <a href="/contacts/">Контакты</a>
+            <a href="{{ url_for("about.index") }}">О проекте</a>
+            <a href="{{ url_for("rss.index") }}">RSS</a>
+            <a href="{{ url_for("contacts.index") }}">Контакты</a>
     </nav>
 <div class="container">
               {%- block topbar -%}
