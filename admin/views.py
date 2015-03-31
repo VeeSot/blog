@@ -19,16 +19,23 @@ def upload_file():
     return ABS_IMG_PATH + filename
 
 
-class List(MethodView):
+class Admin(MethodView):
+    decorators = [requires_auth]
+
+    def get(self):
+        return render_template('admin/base.html')
+
+
+class PostList(MethodView):
     decorators = [requires_auth]
     cls = Post
 
     def get(self):
         posts = self.cls.objects.all()
-        return render_template('admin/list.html', posts=posts)
+        return render_template('admin/posts/list.html', posts=posts)
 
 
-class Detail(MethodView):
+class PostDetail(MethodView):
     decorators = [requires_auth]
     class_map = {
         'post': BlogPost,
@@ -59,7 +66,7 @@ class Detail(MethodView):
 
     def get(self, slug):
         context = self.get_context(slug)
-        return render_template('admin/detail.html', **context)
+        return render_template('admin/posts/detail.html', **context)
 
     def post(self, slug):
         context = self.get_context(slug)
@@ -73,7 +80,7 @@ class Detail(MethodView):
             post.save()
 
             return redirect(url_for('admin.index'))
-        return render_template('admin/detail.html', **context)
+        return render_template('admin/posts/detail.html', **context)
 
 
 class ListTags(MethodView):
@@ -124,11 +131,12 @@ class DetailTag(MethodView):
         return render_template('admin/tags/detail.html', **context)
 
 
-admin.add_url_rule('/panel_control/', view_func=List.as_view('index'))
-admin.add_url_rule('/panel_control/create/', defaults={'slug': None}, view_func=Detail.as_view('create'))
-admin.add_url_rule('/panel_control/<slug>/', view_func=Detail.as_view('edit'))
+admin.add_url_rule('/panel_control/', view_func=Admin.as_view('index'))
+
+admin.add_url_rule('/panel_control/posts/', view_func=PostList.as_view('posts'))
+admin.add_url_rule('/panel_control/post/create/', defaults={'slug': None}, view_func=PostDetail.as_view('post.create'))
+admin.add_url_rule('/panel_control/post/<slug>/', view_func=PostDetail.as_view('post.update'))
 
 admin.add_url_rule('/panel_control/tags/', view_func=ListTags.as_view('tags'))
-admin.add_url_rule('/panel_control/tags/create/', defaults={'tag_name': None},
-                   view_func=DetailTag.as_view('create_tag'))
-admin.add_url_rule('/panel_control/tags/<title>/', view_func=DetailTag.as_view('edit_tag'))
+admin.add_url_rule('/panel_control/tag/create/', defaults={'title': None}, view_func=DetailTag.as_view('tag.create'))
+admin.add_url_rule('/panel_control/tag/<title>/', view_func=DetailTag.as_view('tag.update'))

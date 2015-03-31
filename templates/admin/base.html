@@ -12,11 +12,16 @@
     {% endassets %}
 {% endblock %}
 {%- block topbar -%}
-    {% if request.endpoint != 'admin.index' %}{# Visible only not  admin-index #}
-        <a href="{{ url_for('admin.index') }}" class="btn">Admin-panel</a>
+    {% if request.endpoint != 'admin.posts' %}{# Visible only not  admin-index #}
+        <a href="{{ url_for('admin.posts') }}" class="btn">Posts</a>
     {% endif %}
-    {% if request.endpoint != 'admin.create' %}{# InVisible for  post create page #}
-        <a href="{{ url_for("admin.create", type='post') }}" class="btn">New post</a>
+    {% if request.endpoint != 'admin.post.create' %}
+        <a href="{{ url_for("admin.post.create", type='post') }}" class="btn">New post</a>
     {% endif %}
-        <a href="{{ url_for("admin.create_tag", type='tag') }}" class="btn">New tag</a>
+    {% if request.endpoint != 'admin.tags' %}
+        <a href="{{ url_for("admin.tags", type='post') }}" class="btn">Tags</a>
+    {% endif %}
+    {% if request.endpoint != 'admin.tag.create' %}
+         <a href="{{ url_for("admin.tag.create", type='tag') }}" class="btn">New tag</a>
+    {% endif %}
 {%- endblock -%}
