@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {# Documents with current tag #}
 {% block content %}
-    <h1>{{tag.title}}</h1>
+    <h1>All posts with tag {{tag.title}}</h1>
     {% for post  in posts %}
-        {{ post.title }}
+        <h2><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h2>
     {% endfor %}
 {% endblock %}
 {% block js_footer %}

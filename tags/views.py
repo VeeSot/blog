@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template
 from flask.views import MethodView
 from .models import Tag
+from posts.models import Post
 
 tags = Blueprint('tags', __name__, template_folder='templates')
 
@@ -15,7 +16,11 @@ class DetailTag(MethodView):
     def get(self, title):
         # get documents with tag
         tag = Tag.objects.get_or_404(title=title)
-        return render_template('tags/detail.html', tag=tag)
+        meta_info_tag = tag.get_meta_info()
+        posts = []
+        for post in meta_info_tag.posts:
+            posts.append(Post.objects.get(title=post['title']))
+        return render_template('tags/detail.html', tag=tag, posts=posts)
 
 
 # Register the urls

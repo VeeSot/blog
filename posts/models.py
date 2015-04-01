@@ -48,10 +48,16 @@ class Post(db.DynamicDocument):
 
     def update_tags(self, tags):
         self.tags = []
+
         for tag in tags:
             new_tag = Tag()
             new_tag.title = tag
             self.tags.append(new_tag)
+            # After add tag to post - make this tag global
+            tag_exists = Tag.objects.filter(title=tag)
+            if not tag_exists:
+                Tag(title=tag).save()
+
         self.save()
 
     meta = {
