@@ -4,7 +4,7 @@ from main import db
 
 
 class Tag(db.DynamicDocument):
-    title = db.StringField(max_length=16, required=True)
+    title = db.StringField(max_length=50, required=True)
 
     def get_meta_info(self):
         """"
