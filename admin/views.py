@@ -86,7 +86,7 @@ class PostDetail(MethodView):
 
             post.save()
 
-            tags_list = tags.split(" ")
+            tags_list = tags.split(",")
             post.update_tags(tags_list)
 
             return redirect(url_for('admin.index'))
