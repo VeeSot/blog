@@ -1,0 +1,88 @@
+$primaryLink: #3084BF;
+$secondaryColor: #104F7C;
+$thirdColor: #62ABDF;
+$fourColor: #98d1f8;
+$backGroundColor: #fafafa;
+$blockColor: #fff;
+$textColor: #444444;
+$lightGrey: #e0e0e0;
+
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Cond'), local('OpenSans-CondensedLight'),
+  url(../fonts/font.woff) format('woff');
+}
+
+body {
+  background-color: $backGroundColor;
+  color: $textColor;
+  font: normal normal 1.2em/120% 'Open Sans Condensed';
+  margin: 10px;
+
+  a {
+    color: $primaryLink;
+  }
+  nav {
+    text-align: right;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: $blockColor;
+    a {
+      margin: 10px;
+    }
+  }
+  .container {
+    background: $blockColor;
+    padding: 20px;
+    form {
+      background: $backGroundColor;
+      border: 1px solid $lightGrey;
+      display: inline-block;
+      padding: 10px;
+      fieldset {
+        border: none;
+        margin: 0;
+        padding: 0;
+      }
+      textarea#body, input, label {
+        resize: none;
+        border-radius: 0.1em;
+      }
+      legend{
+        margin-bottom: 10px;
+      }
+      input{
+        margin-bottom:10px ;
+      }
+    }
+    a.btn, input.btn {
+      border: none;
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 1.1em;
+      border-radius: 0.1em;
+      background: $thirdColor;
+      color: #ffffff;
+      margin: 10px 10px 10px 0px;
+      padding: 10px;
+      display: inline-block;
+    }
+  }
+  h3, h4, h5 {
+    margin: 0 0 10px;
+    display: inline-block;
+  }
+  .message {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: $fourColor;
+  }
+  blockquote {
+    color: #777;
+    font-style: italic;
+    margin: 10px;
+    padding: 10px;
+  }
+}

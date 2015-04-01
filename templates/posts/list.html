@@ -1,21 +1,34 @@
 {% extends "base.html" %}
+{% block js_header %}
+    <script src="/static/js/posts/index.js"></script>
+{% endblock %}
+{% block css_header %}
+    {% assets "posts" %}
+        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+    {% endassets %}
+{% endblock %}
 {% block content %}
     {% for post in posts %}
-        <div class="post">
+        <article>
                 {% if post.img %}
-                    <img  src="{{ post.img }}">
+                    <img  src="{{ post.img }}" alt="{{ post.title }}">
                 {% else %}
-                    <img  src="/static/img/nof.png">
+                    <img  src="/static/img/nof.png" alt="Image not found">
                 {% endif %}
            <div class="overview">
-                        <h2><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h2>
+                        <h1><a href="{{ url_for('posts.detail', slug=post.slug) }}">{{ post.title }}</a></h1>
                         {{ post.slug|truncate(100) }}<br><br>
                         {#{% with total=post.comments|length %}
                         TODO:Make counte public comment
                                {{ total }} comment {%- if total > 1 %}s{%- endif -%}
                         {% endwith %}#}
             </div>
-            <time>{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
-        </div>
+            <time datetime="{{ post.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
+        </article>
     {% endfor %}
 {% endblock %}
+    {% block js_footer %}
+        {% for counter in config.COUNTERS%}
+            {{ counter|safe }}
+        {% endfor %}
+    {% endblock %}

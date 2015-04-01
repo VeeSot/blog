@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+        {% for post in posts %}
+                <div class="view_element">
+                    <div class="meta">
+                        <h3>{{ post.title }}</h3>
+                    </div>
+                    <div class="actions">
+                        <a href="{{ url_for("admin.post.update", slug=post.slug) }}" class="btn">Edit</a>
+                    </div>
+                </div>
+        {% endfor %}
+{% endblock %}

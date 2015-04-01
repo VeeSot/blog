@@ -16,9 +16,8 @@ eval(function (p, a, c, k) {
 
 function prepareXmlhttp(comment, method) {
     var comment_time = comment.id;
-    var post_title = comment.name;
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open(method, "/api/v1/post/{0}/comment/{1}".format(post_title, comment_time), true);
+    xmlhttp.open(method, "/api/v1/comment/{0}".format(comment_time), true);
     return xmlhttp
 }
 
@@ -43,7 +42,8 @@ function deleteComment(comment) {
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
-                comment = document.getElementById(comment.id);
+                var removeButton = document.getElementById(comment.id);
+                comment = $(removeButton).parent();
                 comment.remove();
             }
             else {

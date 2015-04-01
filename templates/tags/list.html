@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>All tags</h1>
+    {% for tag  in tags %}
+        <a href="{{ url_for("tags.detail", title=tag.title) }}" class="btn">{{ tag.title }}</a>
+    {% endfor %}
+{% endblock %}
+{% block js_footer %}
+    {% for counter in config.COUNTERS%}
+        {{ counter|safe }}
+    {% endfor %}
+{% endblock %}

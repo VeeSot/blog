@@ -1,4 +1,6 @@
-import json
+from collections import namedtuple
+import pymongo
+from tags.models import Tag
 
 __author__ = 'veesot'
 
@@ -13,6 +15,7 @@ class Post(db.DynamicDocument):
     title = db.StringField(max_length=255, required=True)
     slug = db.StringField(max_length=255, required=True)
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
+    tags = db.ListField(db.EmbeddedDocumentField('Tag'))
 
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
@@ -37,11 +40,25 @@ class Post(db.DynamicDocument):
                 except KeyError:  # Иногда бывает что ключа нет в определеном экземпляре.Нестрогая модель Mongo DB
                     listing[field] = ''
             json_present.append(listing)
-        return json.dumps(json_present)
+        return json_present
 
     @property
     def post_type(self):
         return self.__class__.__name__
+
+    def update_tags(self, tags):
+        self.tags = []
+
+        for tag in tags:
+            new_tag = Tag()
+            new_tag.title = tag
+            self.tags.append(new_tag)
+            # After add tag to post - make this tag global
+            tag_exists = Tag.objects.filter(title=tag)
+            if not tag_exists:
+                Tag(title=tag).save()
+
+        self.save()
 
     meta = {
         'allow_inheritance': True,
@@ -57,8 +74,8 @@ class Comment(db.EmbeddedDocument):
     body = db.StringField(verbose_name="Комментарий", required=True)
     public = db.BooleanField(verbose_name="Опубликовать", default=False)
 
-    @staticmethod
-    def get(post, created_at):
+    @classmethod
+    def get_meta_info_comment(cls, created_at):
         """"
         Args:
             post (Post): Post for comment
@@ -67,24 +84,55 @@ class Comment(db.EmbeddedDocument):
         Returns:
             Comment: needed comment
         """
-        comments = post.comments
-        for comment in comments:
-            if str(comment.created_at) == created_at:
-                return comment
+        # Timestamp in canonic view
+        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
 
-    @staticmethod
-    def delete(post, created_at):
+        # establish a connection to the database
+        connection = pymongo.MongoClient("mongodb://localhost")
+        posts = connection.blog.post
+        meta_info_comment = posts.find_one({"comments.created_at": created_at}, {"_id": 0, 'title': 1, 'comments.$': 1})
+        post = Post.objects.get(title=meta_info_comment['title'])
+
+        for comment in post.comments:
+            if comment.created_at == created_at:
+                meta_info = namedtuple('meta_info_comment', 'post comment')
+                meta_info_comment = meta_info(post, comment)
+                return meta_info_comment
+
+    @classmethod
+    def delete(cls, created_at):
         """"
         Removing specified comment
         Args:
-            post (Post): Post for comment
             created_at (str): timestamp created comment
-
         """
+        meta_info_comment = cls.get_meta_info_comment(created_at)
+
+        comment_for_remove = meta_info_comment.comment
+        post = meta_info_comment.post
+
         comments = post.comments
         for comment in comments:
-            if str(comment.created_at) == created_at:
+            if comment == comment_for_remove:
                 comments.remove(comment)
+                post.save()
+                return
+
+    @classmethod
+    def change_public_status(cls, created_at):
+        """"
+        Public|un-public comment
+        Args:
+            created_at (str): timestamp created comment
+        """
+
+        meta_info_comment = cls.get_meta_info_comment(created_at)
+        comment_for_change = meta_info_comment.comment
+        post = meta_info_comment.post
+        comments = post.comments
+        for comment in comments:
+            if comment == comment_for_change:
+                comment.public = not comment.public  # Inverse current state
                 post.save()
                 return
 
