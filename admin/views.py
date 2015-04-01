@@ -44,9 +44,10 @@ class PostDetail(MethodView):
     def get_context(self, slug=None):
         if slug:
             post = Post.objects.get_or_404(slug=slug)
+            tags = post.tags
             # Handle old posts types as well
             cls = post.__class__ if post.__class__ != Post else BlogPost
-            form_cls = model_form(cls, exclude=('created_at', 'comments', 'img'))
+            form_cls = model_form(cls, exclude=('created_at', 'comments', 'img', 'tags'))
             if request.method == 'POST':
                 form = form_cls(request.form, inital=post._data)
             else:
@@ -55,9 +56,11 @@ class PostDetail(MethodView):
             # Determine which post type we need
             cls = self.class_map.get(request.args.get('type', 'post'))
             post = cls()
-            form_cls = model_form(cls, exclude=('created_at', 'comments', 'img'))
+            form_cls = model_form(cls, exclude=('created_at', 'comments', 'img', 'tags'))
+            tags = {}
             form = form_cls(request.form)
         context = {
+            "tags": tags,
             "post": post,
             "form": form,
             "create": slug is None
@@ -75,9 +78,16 @@ class PostDetail(MethodView):
         if form.validate():
             post = context.get('post')
             form.populate_obj(post)
-            if request.files['file']:
+            file_exists = request.files['file']
+            tags = request.form['tags']
+
+            if file_exists:  # Attach image
                 post.img = upload_file()
+
             post.save()
+
+            tags_list = tags.split(" ")
+            post.update_tags(tags_list)
 
             return redirect(url_for('admin.index'))
         return render_template('admin/posts/detail.html', **context)

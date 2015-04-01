@@ -15,6 +15,7 @@ class Post(db.DynamicDocument):
     title = db.StringField(max_length=255, required=True)
     slug = db.StringField(max_length=255, required=True)
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
+    tags = db.ListField(db.EmbeddedDocumentField('Tag'))
 
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
@@ -44,6 +45,14 @@ class Post(db.DynamicDocument):
     @property
     def post_type(self):
         return self.__class__.__name__
+
+    def update_tags(self, tags):
+        self.tags = []
+        for tag in tags:
+            new_tag = Tag()
+            new_tag.title = tag
+            self.tags.append(new_tag)
+        self.save()
 
     meta = {
         'allow_inheritance': True,
@@ -80,8 +89,8 @@ class Comment(db.EmbeddedDocument):
 
         for comment in post.comments:
             if comment.created_at == created_at:
-                MetaInfoComment = namedtuple('meta_info_comment', 'post comment')
-                meta_info_comment = MetaInfoComment(post, comment)
+                meta_info = namedtuple('meta_info_comment', 'post comment')
+                meta_info_comment = meta_info(post, comment)
                 return meta_info_comment
 
     @classmethod
