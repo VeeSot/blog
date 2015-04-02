@@ -1,6 +1,5 @@
 from collections import namedtuple
-import pymongo
-from main import db
+from main import db, connection_db
 
 
 class Tag(db.DynamicDocument):
@@ -15,10 +14,8 @@ class Tag(db.DynamicDocument):
         title = self.title
 
         # establish a connection to the database
-        connection = pymongo.MongoClient("mongodb://localhost")
-
         # Posts with tags
-        posts_connection = connection.blog.post
+        posts_connection = connection_db.post
         posts = posts_connection.find({"tags.title": title}, {"_id": 0, 'title': 1})
 
         meta_info = namedtuple('meta_info_tag', 'posts')

@@ -25,7 +25,7 @@
     </h2>
     <form action="" method="post" enctype="multipart/form-data">
         {{ forms.render(form) }}
-        <label for="tags">Tags</label>
+        <label for="tags">Tags(through comma separator)</label>
         <div class="input">
             <input id=tags type="text" placeholder="{% for tag in tags %}{{ tag.title }} {% endfor %}" name="tags">
         </div>

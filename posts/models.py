@@ -1,5 +1,4 @@
 from collections import namedtuple
-import pymongo
 from tags.models import Tag
 
 __author__ = 'veesot'
@@ -7,7 +6,7 @@ __author__ = 'veesot'
 import datetime
 
 from flask import url_for
-from main import db
+from main import db,  connection_db
 
 
 class Post(db.DynamicDocument):
@@ -88,8 +87,7 @@ class Comment(db.EmbeddedDocument):
         created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
 
         # establish a connection to the database
-        connection = pymongo.MongoClient("mongodb://localhost")
-        posts = connection.blog.post
+        posts = connection_db.post
         meta_info_comment = posts.find_one({"comments.created_at": created_at}, {"_id": 0, 'title': 1, 'comments.$': 1})
         post = Post.objects.get(title=meta_info_comment['title'])
 
