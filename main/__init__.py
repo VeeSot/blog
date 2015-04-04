@@ -1,9 +1,15 @@
+import socket
 from os.path import dirname, abspath
 import pymongo
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.assets import Environment, Bundle
 from third_party import COUNTERS
+
+if socket.gethostname() == 'localhost':
+    DEBUG = True
+else:
+    DEBUG = False
 
 
 app = Flask(__name__)
