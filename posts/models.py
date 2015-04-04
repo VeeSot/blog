@@ -6,7 +6,7 @@ __author__ = 'veesot'
 import datetime
 
 from flask import url_for
-from main import db,  connection_db
+from main import db, connection_db
 
 
 class Post(db.DynamicDocument):
@@ -14,7 +14,7 @@ class Post(db.DynamicDocument):
     title = db.StringField(max_length=255, required=True)
     slug = db.StringField(max_length=255, required=True)
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
-    tags = db.ListField(db.EmbeddedDocumentField('Tag'))
+    tags = db.ListField(db.ObjectIdField('ObjectId'))
 
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
@@ -45,19 +45,29 @@ class Post(db.DynamicDocument):
     def post_type(self):
         return self.__class__.__name__
 
-    def update_tags(self, tags):
-        self.tags = []
+    @classmethod
+    def update_tags(cls, post, tags):
+        post.tags = []
 
         for tag in tags:
-            new_tag = Tag()
-            new_tag.title = tag
-            self.tags.append(new_tag)
-            # After add tag to post - make this tag global
-            tag_exists = Tag.objects.filter(title=tag)
-            if not tag_exists:
-                Tag(title=tag).save()
+            if Tag.objects.filter(title=tag):
+                new_tag = Tag.objects.get(title=tag)
+            else:
+                new_tag = Tag(title=tag).save()
 
-        self.save()
+            post.tags.append(new_tag.id)
+
+        post.save()
+
+    @classmethod
+    def get_title_tags(cls, post):
+        """Return tags title from Tags"""
+        tags = []
+        tags_id = post.tags
+        for tag_ig in tags_id:
+            tags.append(Tag.objects.get(id=tag_ig).title)
+        return tags
+
 
     meta = {
         'allow_inheritance': True,

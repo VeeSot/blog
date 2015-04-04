@@ -27,7 +27,7 @@
         {{ forms.render(form) }}
         <label for="tags">Tags(through comma separator)</label>
         <div class="input">
-            <input id=tags type="text" placeholder="{% for tag in tags %}{{ tag.title }} {% endfor %}" name="tags">
+            <input id=tags type="text" placeholder="{% for tag in tags %}{{ tag }} {% endfor %}" name="tags">
         </div>
         <label for="file">File</label>
         <div class="input">

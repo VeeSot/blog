@@ -44,7 +44,7 @@ class PostDetail(MethodView):
     def get_context(self, slug=None):
         if slug:
             post = Post.objects.get_or_404(slug=slug)
-            tags = post.tags
+            tags = Post.get_title_tags(post)
             # Handle old posts types as well
             cls = post.__class__ if post.__class__ != Post else BlogPost
             form_cls = model_form(cls, exclude=('created_at', 'comments', 'img', 'tags'))
@@ -87,7 +87,7 @@ class PostDetail(MethodView):
             post.save()
 
             tags_list = tags.split(",")
-            post.update_tags(tags_list)
+            Post.update_tags(post, tags_list)
 
             return redirect(url_for('admin.index'))
         return render_template('admin/posts/detail.html', **context)

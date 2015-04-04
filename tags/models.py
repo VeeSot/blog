@@ -11,12 +11,10 @@ class Tag(db.DynamicDocument):
             meta info about tag: example post list with this tag
         """
         # Timestamp in canonic view
-        title = self.title
-
         # establish a connection to the database
         # Posts with tags
         posts_connection = connection_db.post
-        posts = posts_connection.find({"tags.title": title}, {"_id": 0, 'title': 1})
+        posts = posts_connection.find({"tags": self.id}, {"_id": 0, 'title': 1})
 
         meta_info = namedtuple('meta_info_tag', 'posts')
         meta_info_tag = meta_info(posts)

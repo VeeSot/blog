@@ -7,21 +7,23 @@ from .models import Post, Comment
 posts = Blueprint('posts', __name__, template_folder='templates')
 
 
-class ListView(MethodView):
+class PostList(MethodView):
     def get(self):
         posts = Post.objects.all()
         return render_template('posts/list.html', posts=posts)
 
 
-class DetailView(MethodView):
+class PostDetail(MethodView):
     form = model_form(Comment, exclude=['created_at', 'public'])
 
     def get_context(self, slug):
         post = Post.objects.get_or_404(slug=slug)
         form = self.form(request.form)
         admin = UserAuth.is_admin()
+        tags = Post.get_title_tags(post)
 
         context = {
+            "tags":tags,
             "post": post,
             "form": form,
             "admin": admin
@@ -50,5 +52,5 @@ class DetailView(MethodView):
 
 
 # Register the urls
-posts.add_url_rule('/', view_func=ListView.as_view('list'))
-posts.add_url_rule('/post/<slug>/', view_func=DetailView.as_view('detail'))
+posts.add_url_rule('/', view_func=PostList.as_view('list'))
+posts.add_url_rule('/post/<slug>/', view_func=PostDetail.as_view('detail'))
