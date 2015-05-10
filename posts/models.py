@@ -16,6 +16,9 @@ class Post(db.DynamicDocument):
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
     tags = db.ListField(db.ObjectIdField('ObjectId'))
 
+    def get_public_comments(self):
+        return self.comments
+
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
 
@@ -67,7 +70,6 @@ class Post(db.DynamicDocument):
         for tag_ig in tags_id:
             tags.append(Tag.objects.get(id=tag_ig).title)
         return tags
-
 
     meta = {
         'allow_inheritance': True,

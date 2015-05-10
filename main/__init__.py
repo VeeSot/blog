@@ -1,4 +1,5 @@
 import socket
+
 from os.path import dirname, abspath
 import pymongo
 from flask import Flask
@@ -10,7 +11,6 @@ if socket.gethostname() == 'localhost':
     DEBUG = True
 else:
     DEBUG = False
-
 
 app = Flask(__name__)
 ROOT_PATH = dirname(dirname(abspath(__file__)))  # Main root dir
