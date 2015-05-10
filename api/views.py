@@ -1,9 +1,12 @@
 import json
 
+from flask.ext.api import status
+from mongoengine import ValidationError
 from auth.views import UserAuth
 from flask import jsonify, Blueprint, request, Response
 from main import app
 from posts.models import Post, Comment
+from service.views import prepare_response
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 
@@ -11,43 +14,75 @@ api = Blueprint('api', __name__, url_prefix='/api/v1')
 class ApiPost:
     @staticmethod
     @api.route("/posts/", methods=['GET', 'POST', 'PATCH', 'DELETE'])
-    @api.route("/posts/<title>", methods=['GET', 'POST', 'PATCH', 'DELETE'])
+    @api.route("/posts/<title>", methods=['GET', 'POST', 'PATCH', 'DELETE', 'PUT'])
     def dispatcher_posts(title=None):
         if request.method == 'GET' and title is None:  # Пришел запрос на индекс
-            return ApiPost.post_index()
+            return ApiPost.index()
         elif request.method == 'GET' and title:  # Нужен определеный пост
-            return ApiPost.get_post(title)
+            return ApiPost.get(title)
+        elif request.method == 'POST' and request.data and title is None:  # Пришли данные для создания поста
+            meta_info = json.loads(request.data.decode())
+            return ApiPost.create(meta_info)
+        elif request.method == 'PUT' and request.data and title:
+            meta_info = json.loads(request.data.decode())
+            return ApiPost.update(meta_info, title)
+        elif request.method == 'DELETE' and title:
+            return ApiPost.delete(title)
 
     @classmethod
-    def post_index(cls):
+    def index(cls):
         """
         Return all post
         """
-        response = Post.get_json_with_field('title', 'img', 'slug', 'created_at')
+        posts = Post.objects.all()
+        response = []
+        for post in posts:
+            post_meta_info = post.get_post_dict()
+            response.append(post_meta_info)
         return Response(json.dumps(response), mimetype='application/json')  # jsonify - don correct fot this case!
 
     @classmethod
-    def get_post(cls, title):
+    def get(cls, title):
         """
         Get specify post
         """
         post = Post.objects.get_or_404(title=title)
+        response = post.get_post_dict()
 
-        public_comments = [{'body': comment.body,
-                            'author': comment.author,
-                            'created_at': comment.created_at.strftime('%Y-%m-%d %H:%M:%S')}
-                           for comment in post.comments if comment.public]  # Комментарии разрешеные к публикации
+        return jsonify(response)
 
-        response = [{'title': post.title,
-                     'slug': post.slug, 'img': post.img,
-                     'created_at': post.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                     'body': post.body,
-                     'comments': public_comments}]
+    @classmethod
+    def create(cls, meta_info):
+        """
+        Get specify post
+        """
+        try:
+            post = Post(**meta_info)  # Create from meta_info dict
+            post.save()
+            response = prepare_response(post, ignore_fields=['id'])
+        except ValidationError:
+            response = []  # We ignored mistake on user-side.Temporary
+        return Response(json.dumps(response), mimetype='application/json'), status.HTTP_201_CREATED
 
-        return Response(json.dumps(response), mimetype='application/json')
+    @classmethod
+    def update(cls, meta_info, title):
+        post = Post.objects.get(title=title)
+        fields = meta_info.keys()
+        for field in fields:
+            post._data[field] = meta_info[field]
+        post.save()
+        response = post.get_post_dict()
+        return jsonify(response)
+
+    @classmethod
+    def delete(cls, title):
+        post = Post.objects.get(title=title)
+        post.delete()
+        response = []
+        return Response(json.dumps(response), mimetype='application/json'), status.HTTP_204_NO_CONTENT
 
 
-class ApiComment():
+class ApiComment:
     @staticmethod
     @app.route("/comment/<created_at>", methods=['PUT', 'DELETE'])
     def change_comment(created_at=None):
