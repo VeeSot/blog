@@ -1,10 +1,11 @@
 import json
 
+import asjson
+
 from flask.ext.api import status
 from mongoengine import ValidationError
 from auth.views import UserAuth
 from flask import jsonify, Blueprint, request, Response
-from main import app
 from posts.models import Post, Comment
 from service.views import prepare_response
 
@@ -39,7 +40,7 @@ class ApiPost:
         for post in posts:
             post_meta_info = post.get_post_dict()
             response.append(post_meta_info)
-        return Response(json.dumps(response), mimetype='application/json')  # jsonify - don correct fot this case!
+        return Response(asjson.dumps(response), mimetype='application/json')  # jsonify - don correct fot this case!
 
     @classmethod
     def get(cls, title):
@@ -66,6 +67,9 @@ class ApiPost:
 
     @classmethod
     def update(cls, meta_info, title):
+        """
+        Update specify post
+        """
         post = Post.objects.get(title=title)
         fields = meta_info.keys()
         for field in fields:
@@ -76,6 +80,9 @@ class ApiPost:
 
     @classmethod
     def delete(cls, title):
+        """
+        Delete specify post
+        """
         post = Post.objects.get(title=title)
         post.delete()
         response = []
@@ -84,7 +91,15 @@ class ApiPost:
 
 class ApiComment:
     @staticmethod
-    @app.route("/comment/<created_at>", methods=['PUT', 'DELETE'])
+    @api.route("/posts/<title>/comments/", methods=['GET', 'POST'])
+    def dispatcher_comments(title=None):
+        post = Post.objects.get(title=title)
+        if request.method == 'GET':  # Пришел запрос на список комментариев к посту.Отдаем только разрешеные
+            return Response(asjson.dumps(post.get_public_comments()), mimetype='application/json')
+        elif request.method == 'POST' and request.data:  # Пришли данные для добавления коммента
+            meta_info = json.loads(request.data.decode())
+            return post.add_comment(meta_info)
+
     def change_comment(created_at=None):
         """
         Change comment make (un)visible or remove
@@ -100,3 +115,7 @@ class ApiComment:
             return jsonify({'status': 'success'})
         else:
             return jsonify({'status': 'fail'})
+
+    @classmethod
+    def index(cls):
+        pass

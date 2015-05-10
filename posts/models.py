@@ -1,5 +1,4 @@
 from collections import namedtuple
-from service.views import prepare_response
 from tags.models import Tag
 
 __author__ = 'veesot'
@@ -19,9 +18,21 @@ class Post(db.DynamicDocument):
 
     def get_post_dict(self):
         """Представление в ввиде словаря.Может использоваться в JSON - ответе"""
-        post_dict = prepare_response(self, ignore_fields=['id', 'email', 'comments'])  # We not need id and comments
-        # Comment approve moderation
-        return post_dict
+        posts = connection_db.post
+        return posts.find_one({'title': self.title}, {"_id": 0, '_cls': 0, 'comments': 0})
+
+    def get_public_comments(self):
+        posts = connection_db.post
+        public_comments = posts.aggregate([{'$unwind': "$comments"},
+                                           {'$match': {"comments.public": True, "title": self.title}},
+                                           {'$project': {'_id': 0, 'author': "$comments.author",
+                                                         'body': "$comments.body",
+                                                         'created_at': "$comments.created_at"}}])['result']
+        return public_comments
+
+    def add_comment(self, meta_info):
+        comment = Comment(**meta_info)
+        self.comments.append(comment)
 
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
