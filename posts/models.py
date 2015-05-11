@@ -1,3 +1,4 @@
+from service.views import instance_to_dict
 from tags.models import Tag
 
 __author__ = 'veesot'
@@ -15,10 +16,12 @@ class Post(db.DynamicDocument):
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
     tags = db.ListField(db.ObjectIdField('ObjectId'))
 
-    def get_post_dict(self):
+    def get_post_dict(self, partial_content=None):
         """Представление в ввиде словаря.Может использоваться в JSON - ответе"""
-        posts = connection_db.post
-        return posts.find_one({'title': self.title}, {"_id": 0, '_cls': 0, 'comments': 0})
+        if not partial_content:  # Если нужна информация вся
+            return instance_to_dict(self, 'created_at', 'title', 'slug', 'body')
+        else:
+            return instance_to_dict(self, *partial_content)
 
     def get_comments(self, public=True):
         posts = connection_db.post
@@ -83,7 +86,7 @@ class Comment(db.EmbeddedDocument):
     public = db.BooleanField(verbose_name="Опубликовать", default=False)
 
     def get_comment_dict(self):
-        return {'created_at': self.created_at, 'author': self.author, 'body': self.body}
+        return instance_to_dict(self, 'created_at', 'author', 'body')
 
     @classmethod
     def get_post_by_time_create_comment(cls, created_at):

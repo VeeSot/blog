@@ -1,4 +1,5 @@
 import datetime
+
 from flask import send_from_directory, request, make_response, Blueprint
 from jinja2 import Environment, FileSystemLoader
 from main import STATIC_ROOT, ROOT_PATH, app
@@ -46,3 +47,19 @@ def prepare_response(model, ignore_fields=None):
             else:
                 response[attribute] = model._data[attribute]
     return response
+
+
+def instance_to_dict(model, *args):
+    """""
+    Конвертирует Flask-всую Model в обычный словарик.
+    Аргументами принимает поля по которым делается выбрка из Model
+    """""
+    model_dict = {}
+    for arg in args:
+        try:
+            value = model.__getattribute__(arg)
+        except:  # Возможны неприятности с преобразованиями
+            value = ''
+        model_dict[arg] = value
+        # Переобразовываем в строковое представление при надобности
+    return model_dict
