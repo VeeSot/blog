@@ -1,4 +1,3 @@
-from collections import namedtuple
 from tags.models import Tag
 
 __author__ = 'veesot'
@@ -21,18 +20,20 @@ class Post(db.DynamicDocument):
         posts = connection_db.post
         return posts.find_one({'title': self.title}, {"_id": 0, '_cls': 0, 'comments': 0})
 
-    def get_public_comments(self):
+    def get_comments(self, public=True):
         posts = connection_db.post
-        public_comments = posts.aggregate([{'$unwind': "$comments"},
-                                           {'$match': {"comments.public": True, "title": self.title}},
-                                           {'$project': {'_id': 0, 'author': "$comments.author",
-                                                         'body': "$comments.body",
-                                                         'created_at': "$comments.created_at"}}])['result']
-        return public_comments
+        comments = posts.aggregate([{'$unwind': "$comments"},
+                                    {'$match': {"comments.public": public, "title": self.title}},
+                                    {'$project': {'_id': 0, 'author': "$comments.author",
+                                                  'body': "$comments.body",
+                                                  'created_at': "$comments.created_at"}}])['result']
+        return comments
 
     def add_comment(self, meta_info):
         comment = Comment(**meta_info)
         self.comments.append(comment)
+        self.save()
+        return comment.get_comment_dict()
 
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
@@ -81,8 +82,23 @@ class Comment(db.EmbeddedDocument):
     body = db.StringField(verbose_name="Комментарий", required=True)
     public = db.BooleanField(verbose_name="Опубликовать", default=False)
 
+    def get_comment_dict(self):
+        return {'created_at': self.created_at, 'author': self.author, 'body': self.body}
+
     @classmethod
-    def get_meta_info_comment(cls, created_at):
+    def get_post_by_time_create_comment(cls, created_at):
+
+        # Timestamp in canonic view
+        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%S.%f")
+
+        # establish a connection to the database
+        posts = connection_db.post
+        meta_info_comment = posts.find_one({"comments.created_at": created_at}, {"_id": 0, 'title': 1, 'comments.$': 1})
+        post = Post.objects.get(title=meta_info_comment['title'])
+        return post
+
+    @classmethod
+    def get_by_time_create(cls, created_at):
         """"
         Args:
             post (Post): Post for comment
@@ -91,56 +107,38 @@ class Comment(db.EmbeddedDocument):
         Returns:
             Comment: needed comment
         """
-        # Timestamp in canonic view
-        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
-
-        # establish a connection to the database
-        posts = connection_db.post
-        meta_info_comment = posts.find_one({"comments.created_at": created_at}, {"_id": 0, 'title': 1, 'comments.$': 1})
-        post = Post.objects.get(title=meta_info_comment['title'])
-
+        post = cls.get_post_by_time_create_comment(created_at)
         for comment in post.comments:
             if comment.created_at == created_at:
-                meta_info = namedtuple('meta_info_comment', 'post comment')
-                meta_info_comment = meta_info(post, comment)
-                return meta_info_comment
+                return comment
 
     @classmethod
-    def delete(cls, created_at):
+    def delete(cls, post, created_at):
         """"
         Removing specified comment
         Args:
             created_at (str): timestamp created comment
         """
-        meta_info_comment = cls.get_meta_info_comment(created_at)
-
-        comment_for_remove = meta_info_comment.comment
-        post = meta_info_comment.post
-
         comments = post.comments
         for comment in comments:
-            if comment == comment_for_remove:
+            if comment.created_at == created_at:
                 comments.remove(comment)
                 post.save()
                 return
 
     @classmethod
-    def change_public_status(cls, created_at):
+    def change_public_status(cls, post, created_at):
         """"
         Public|un-public comment
         Args:
             created_at (str): timestamp created comment
         """
-
-        meta_info_comment = cls.get_meta_info_comment(created_at)
-        comment_for_change = meta_info_comment.comment
-        post = meta_info_comment.post
         comments = post.comments
         for comment in comments:
-            if comment == comment_for_change:
+            if comment.created_at == created_at:
                 comment.public = not comment.public  # Inverse current state
                 post.save()
-                return
+                return comment
 
     def __unicode__(self):
         return self.created_at

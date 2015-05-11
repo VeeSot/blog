@@ -1,7 +1,7 @@
+import datetime
 import json
 
 import asjson
-
 from flask.ext.api import status
 from mongoengine import ValidationError
 from auth.views import UserAuth
@@ -92,30 +92,46 @@ class ApiPost:
 class ApiComment:
     @staticmethod
     @api.route("/posts/<title>/comments/", methods=['GET', 'POST'])
-    def dispatcher_comments(title=None):
+    @api.route("/posts/<title>/comments/<created_at>", methods=['PATCH', 'DELETE'])
+    def dispatcher_comments(title=None, created_at=None):
         post = Post.objects.get(title=title)
         if request.method == 'GET':  # Пришел запрос на список комментариев к посту.Отдаем только разрешеные
-            return Response(asjson.dumps(post.get_public_comments()), mimetype='application/json')
+            return Response(asjson.dumps(post.get_comments(public=True)), mimetype='application/json')
         elif request.method == 'POST' and request.data:  # Пришли данные для добавления коммента
             meta_info = json.loads(request.data.decode())
-            return post.add_comment(meta_info)
+            return asjson.dumps(post.add_comment(meta_info))
+        elif request.method == 'PATCH' and created_at:
+            return ApiComment.update(post, created_at)
+        elif request.method == 'DELETE' and created_at:
+            return ApiComment.delete(post, created_at)
 
-    def change_comment(created_at=None):
+    @classmethod
+    def update(cls, post, created_at):
         """
         Change comment make (un)visible or remove
         Returns:
             json: Notify about current status comment
         """
 
-        if UserAuth.is_admin() and not (created_at is None):
-            if request.method == 'PUT':
-                Comment.change_public_status(created_at)
-            elif request.method == 'DELETE':
-                Comment.delete(created_at)
-            return jsonify({'status': 'success'})
+        if UserAuth.is_admin() and created_at:
+            created_at = datetime.datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%S.%f")
+            comment = Comment.change_public_status(post, created_at)
+            response = comment.get_comment_dict()
+            return jsonify(response)
         else:
-            return jsonify({'status': 'fail'})
+            return jsonify([]), status.HTTP_403_FORBIDDEN
 
     @classmethod
-    def index(cls):
-        pass
+    def delete(cls, post, created_at):
+        """
+        Change comment make (un)visible or remove
+        Returns:
+            json: Notify about current status comment
+        """
+
+        if UserAuth.is_admin() and created_at:
+            created_at = datetime.datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%S.%f")
+            Comment.delete(post, created_at)
+            return jsonify([]), status.HTTP_204_NO_CONTENT
+        else:
+            return jsonify([]), status.HTTP_403_FORBIDDEN

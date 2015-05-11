@@ -15,14 +15,15 @@ eval(function (p, a, c, k) {
 ));
 
 function prepareXmlhttp(comment, method) {
+    var title = $('#title').html();
     var comment_time = comment.id;
     var xmlhttp = new XMLHttpRequest();
-    xmlhttp.open(method, "/api/v1/comment/{0}".format(comment_time), true);
+    xmlhttp.open(method, "/api/v1/posts/{0}/comments/{1}".format(title, comment_time), true);
     return xmlhttp
 }
 
 function publicComment(comment) {
-    var xmlhttp = prepareXmlhttp(comment, 'PUT');
+    var xmlhttp = prepareXmlhttp(comment, 'PATCH');
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
             if (xmlhttp.status == 200) {
@@ -30,7 +31,7 @@ function publicComment(comment) {
                 changePublicStatus(response, comment);
             }
             else {
-                console.log('Network problem')
+                console.log('Changed failed')
             }
         }
     };
@@ -41,13 +42,13 @@ function deleteComment(comment) {
     var xmlhttp = prepareXmlhttp(comment, 'DELETE');
     xmlhttp.onreadystatechange = function () {
         if (xmlhttp.readyState == 4) {
-            if (xmlhttp.status == 200) {
+            if (xmlhttp.status == 204) {
                 var removeButton = document.getElementById(comment.id);
                 comment = $(removeButton).parent();
                 comment.remove();
             }
             else {
-                console.log('Network problem')
+                console.log('Delete failed')
             }
         }
     };
@@ -55,8 +56,7 @@ function deleteComment(comment) {
 }
 
 function changePublicStatus(response, comment) {
-    var status = response['status'];
-    if (status == 'success') {
+    if (response) {
         if (comment.value == 'Public') {
             comment.value = 'Un-public'
         }
