@@ -41,9 +41,6 @@ def prepare_response(model, ignore_fields=None):
                 for element in model._data[attribute]:
                     included_list.append(prepare_response(element, ignore_fields))
                 response[attribute] = included_list
-            elif isinstance(model._data[attribute], datetime.datetime):
-                # datetime not encoding to json to default.Convert to string
-                response[attribute] = model._data[attribute].strftime('%Y-%m-%d %H:%M:%S')
             else:
                 response[attribute] = model._data[attribute]
     return response
@@ -51,13 +48,13 @@ def prepare_response(model, ignore_fields=None):
 
 def instance_to_dict(model, *args):
     """""
-    Конвертирует Flask-всую Model в обычный словарик.
+    Конвертирует Flask-вскую Model в обычный словарик.
     Аргументами принимает поля по которым делается выбрка из Model
     """""
     model_dict = {}
     for arg in args:
         try:
-            value = model.__getattribute__(arg)
+            value = getattr(model, arg)
         except:  # Возможны неприятности с преобразованиями
             value = ''
         model_dict[arg] = value

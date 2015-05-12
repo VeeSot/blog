@@ -22,7 +22,7 @@ class ApiPost:
         elif request.method == 'POST' and request.data and title is None:  # Пришли данные для создания поста
             meta_info = asjson.loads(request.data.decode())
             return ApiPost.create(meta_info)
-        elif request.method == 'PUT' and request.data and title:
+        elif request.method == 'PUT' or request.method == 'PATCH' and request.data and title:
             meta_info = asjson.loads(request.data.decode())
             return ApiPost.update(meta_info, title)
         elif request.method == 'DELETE' and title:
@@ -73,7 +73,7 @@ class ApiPost:
         post = Post.objects.get(title=title)
         fields = meta_info.keys()
         for field in fields:
-            post._data[field] = meta_info[field]
+            setattr(post, field, meta_info[field])
         post.save()
         response = post.get_post_dict()
         return Response(asjson.dumps(response), mimetype='application/json')
