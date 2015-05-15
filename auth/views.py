@@ -52,7 +52,12 @@ class UserAuth(MethodView):
     @staticmethod
     def is_admin():
         # Выуживаем куки из различных мест,т.к. отправлять могут в виде атрибута  заголовков
-        cookies = request.cookies or asjson.loads(request.headers['Set-Cookie'])
+        cookies = request.cookies
+        if not cookies:  # Ничего не нашли на первой иттерации.Попробуем вытащить из заголовка
+            try:
+                cookies = asjson.loads(request.headers['Set-Cookie'])
+            except KeyError:
+                pass
         if 'session_id' in cookies:
             session_id = cookies['session_id']
             return bool(SessionStorage.objects.filter(session_key=session_id))
