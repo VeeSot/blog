@@ -34,6 +34,10 @@ class Api:
     def handler_500(cls, error):
         return {"code": 500, "messages": "Server response '{0}'.Correct you request and retry".format(error)}
 
+    @classmethod
+    def handler_204(cls, resource, title):
+        return {"code": 204, "messages": "'{0}' with name {1) been removed".format(resource, title)}
+
 
 class Post(Api):
     @staticmethod
@@ -101,7 +105,7 @@ class Post(Api):
             response = post.get_post_dict()
             code = status.HTTP_201_CREATED
         except ValidationError:
-            response = Api.handler_400(class_post, metadata)
+            response = Api.handler_400(metadata, class_post)
             code = status.HTTP_400_BAD_REQUEST
         except Forbidden:
             response = Api.handler_403(class_post)
@@ -148,7 +152,7 @@ class Post(Api):
                 raise Forbidden
             post = BlogPost.objects.get(title=title)
             post.delete()
-            response = []
+            response = Api.handler_204(class_post, title)
             code = status.HTTP_204_NO_CONTENT
         except DoesNotExist:
             response = Api.handler_404(class_post, title)
