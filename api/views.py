@@ -8,21 +8,31 @@ from flask import Blueprint, request, Response
 from posts.models import BlogPost, Comment
 from werkzeug.exceptions import Forbidden
 
+class_post = BlogPost.__base__.__name__.lower()
+
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 
 
 class Api:
     @classmethod
-    def handler_404(cls, title):
-        return {"code": 404, "messages": "Post with title {0} not found".format(title)}
+    def handler_201(cls, resource, title):
+        return {"code": 201, "messages": "{0} with title {1} been created".format(resource, title)}
 
     @classmethod
-    def handler_403(cls):
-        return {"code": 403, "messages": "Access forbidden"}
+    def handler_404(cls, resource, title):
+        return {"code": 404, "messages": "{0} with title '{1}' not found".format(resource, title)}
 
     @classmethod
-    def handler_400(cls, metadata):
-        return {"code": 400, "messages": "Data {0} not passed validation".format(metadata)}
+    def handler_403(cls, resource):
+        return {"code": 403, "messages": "Access to {0} forbidden".format(resource)}
+
+    @classmethod
+    def handler_400(cls, metadata, resource):
+        return {"code": 400, "messages": "Data {0} for {1} not for passed validation".format(metadata, resource)}
+
+    @classmethod
+    def handler_500(cls, error):
+        return {"code": 500, "messages": "Server response '{0}'.Correct you request and retry".format(error)}
 
 
 class Post(Api):
@@ -30,18 +40,23 @@ class Post(Api):
     @api.route("/posts/", methods=['GET', 'POST'])
     @api.route("/posts/<title>", methods=['GET', 'POST', 'PATCH', 'DELETE', 'PUT'])
     def dispatcher_posts(title=None):
-        if request.method == 'GET' and title is None:  # Пришел запрос на индекс
-            return Post.index()
-        elif request.method == 'GET' and title:  # Нужен определеный пост
-            return Post.get(title)
-        elif request.method == 'POST' and request.data and title is None:  # Пришли данные для создания поста
-            meta_info = asjson.loads(request.data.decode())
-            return Post.create(meta_info)
-        elif request.method == 'PUT' or request.method == 'PATCH' and request.data and title:
-            meta_info = asjson.loads(request.data.decode())
-            return Post.update(meta_info, title)
-        elif request.method == 'DELETE' and title:
-            return Post.delete(title)
+        try:
+            if request.method == 'GET' and title is None:  # Пришел запрос на индекс
+                return Post.index()
+            elif request.method == 'GET' and title:  # Нужен определеный пост
+                return Post.get(title)
+            elif request.method == 'POST' and request.data and title is None:  # Пришли данные для создания поста
+                meta_info = asjson.loads(request.data.decode())
+                return Post.create(meta_info)
+            elif request.method == 'PUT' or request.method == 'PATCH' and request.data and title:
+                meta_info = asjson.loads(request.data.decode())
+                return Post.update(meta_info, title)
+            elif request.method == 'DELETE' and title:
+                return Post.delete(title)
+        except ValueError as error:  # Один обработчик на косячный ввод данных(наличие нужны/отсутствие важных символов)
+            response = Api.handler_500(error)
+            code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return Response(asjson.dumps(response), mimetype='application/json'), code
 
     @classmethod
     def index(cls):
@@ -61,6 +76,7 @@ class Post(Api):
         Get specify post
         """
         partial_content = None
+
         try:
             post = BlogPost.objects.get(title=title)
             if request.query_string:
@@ -68,7 +84,7 @@ class Post(Api):
             response = post.get_post_dict(partial_content)
             code = status.HTTP_200_OK
         except DoesNotExist:
-            response = Api.handler_404(title)
+            response = Api.handler_404(class_post, title)
             code = status.HTTP_404_NOT_FOUND
         return Response(asjson.dumps(response), mimetype='application/json'), code
 
@@ -85,10 +101,10 @@ class Post(Api):
             response = post.get_post_dict()
             code = status.HTTP_201_CREATED
         except ValidationError:
-            response = Api.handler_400(metadata)
+            response = Api.handler_400(class_post, metadata)
             code = status.HTTP_400_BAD_REQUEST
         except Forbidden:
-            response = Api.handler_403()
+            response = Api.handler_403(class_post)
             code = status.HTTP_403_FORBIDDEN
 
         return Response(asjson.dumps(response), mimetype='application/json'), code
@@ -104,16 +120,22 @@ class Post(Api):
             post = BlogPost.objects.get(title=title)
             fields = meta_info.keys()
             for field in fields:
-                setattr(post, field, meta_info[field])
+                if field in post:  # Если атрибут совместим с моделью и нам не прислали фигню.Недостатки schema-less
+                    setattr(post, field, meta_info[field])
+                else:
+                    raise ValidationError
             post.save()
             response = post.get_post_dict()
             code = status.HTTP_200_OK
         except DoesNotExist:
-            response = Api.handler_404(title)
+            response = Api.handler_404(class_post, title)
             code = status.HTTP_404_NOT_FOUND
         except Forbidden:
-            response = Api.handler_403()
+            response = Api.handler_403(class_post)
             code = status.HTTP_403_FORBIDDEN
+        except ValidationError:
+            response = Api.handler_400(meta_info, class_post)
+            code = status.HTTP_400_BAD_REQUEST
         return Response(asjson.dumps(response), mimetype='application/json'), code
 
     @classmethod
@@ -129,10 +151,10 @@ class Post(Api):
             response = []
             code = status.HTTP_204_NO_CONTENT
         except DoesNotExist:
-            response = Api.handler_404(title)
+            response = Api.handler_404(class_post, title)
             code = status.HTTP_404_NOT_FOUND
         except Forbidden:
-            response = Api.handler_403()
+            response = Api.handler_403(class_post)
             code = status.HTTP_403_FORBIDDEN
         return Response(asjson.dumps(response), mimetype='application/json'), code
 
