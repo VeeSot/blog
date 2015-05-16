@@ -1,5 +1,7 @@
 import datetime
 
+import operator
+
 import asjson
 from flask.ext.api import status
 from mongoengine import ValidationError, DoesNotExist
@@ -45,10 +47,16 @@ class Post(Api):
     @api.route("/posts/<title>", methods=['GET', 'POST', 'PATCH', 'DELETE', 'PUT'])
     def dispatcher_posts(title=None):
         try:
-            if request.method == 'GET' and title is None:  # Пришел запрос на индекс
-                return Post.index()
-            elif request.method == 'GET' and title:  # Нужен определеный пост
-                return Post.get(title)
+            if request.method == 'GET':
+                # Разбор дополнительных GET-параметров
+                partial_content = None  # По умолчанию мы считаем что пользователю не нужнен частичный ответ
+                if request.query_string and b'fields' in request.query_string:
+                    partial_content = request.args['fields'].split(',')  # Собираем список важных атрибутов
+
+                if title is None:  # Пришел запрос на индекс
+                    return Post.index(partial_content)
+                elif title:  # Нужен определеный пост
+                    return Post.get(title, partial_content)
             elif request.method == 'POST' and request.data and title is None:  # Пришли данные для создания поста
                 meta_info = asjson.loads(request.data.decode())
                 return Post.create(meta_info)
@@ -63,28 +71,36 @@ class Post(Api):
             return Response(asjson.dumps(response), mimetype='application/json'), code
 
     @classmethod
-    def index(cls):
+    def index(cls, partial_content, order_by=None, offset=0, limit=10):
         """
-        Return all post
+        Return post list by criteria
         """
-        posts = BlogPost.objects.all()
+        if request.query_string:  # Проверка дополнительных входных параметров
+            if 'orderBy' in request.args:
+                order_by = request.args['orderBy'].split(',')  # Собираем атрибутов для сортировки
+            # Параметры для паджинации
+            if 'offset' in request.args:
+                offset = int(request.args['offset'])
+            if 'limit' in request.args:
+                limit = int(request.args['limit'])
+
+        posts = list(BlogPost.objects.limit(limit).skip(offset))
+        if order_by:
+            posts.sort(key=operator.attrgetter(*order_by))
+
         response = []
         for post in posts:
-            post_meta_info = post.get_post_dict()
+            post_meta_info = post.get_post_dict(partial_content)
             response.append(post_meta_info)
         return Response(asjson.dumps(response), mimetype='application/json')  # jsonify - don correct fot this case!
 
     @classmethod
-    def get(cls, title):
+    def get(cls, title, partial_content):
         """
         Get specify post
         """
-        partial_content = None
-
         try:
             post = BlogPost.objects.get(title=title)
-            if request.query_string:
-                partial_content = request.args['fields'].split(',')
             response = post.get_post_dict(partial_content)
             code = status.HTTP_200_OK
         except DoesNotExist:

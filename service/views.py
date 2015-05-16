@@ -1,5 +1,3 @@
-import datetime
-
 from flask import send_from_directory, request, make_response, Blueprint
 from jinja2 import Environment, FileSystemLoader
 from main import STATIC_ROOT, ROOT_PATH, app
