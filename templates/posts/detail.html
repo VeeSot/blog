@@ -7,6 +7,9 @@
     {% assets "posts" %}
         <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
+    {% assets "hljs" %}
+        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+    {% endassets %}
 {% endblock %}
 {% block page_header %}
     <article>
@@ -51,6 +54,8 @@
     </form>
 {% endblock %}
 {% block js_footer %}
+    <script src="/static/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     {% for counter in config.COUNTERS %}
         {{ counter|safe }}
     {% endfor %}
