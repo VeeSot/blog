@@ -3,6 +3,6 @@ env
 *pyc
 .idea
 static/css/*
-static/img/*
+/static/img/*
 !static/img/nof.png
-main/local_setings.py
+main/local_settings.py

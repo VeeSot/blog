@@ -1,6 +1,6 @@
 # Set the path
 import sys
-from main import app
+from main import app, DEBUG
 
 import os
 from flask.ext.script import Manager, Server
@@ -12,7 +12,7 @@ manager = Manager(app)
 
 # Turn on debugger by default and reloader
 manager.add_command("runserver", Server(
-    use_debugger=True,
+    use_debugger=DEBUG,
     use_reloader=True,
     host='0.0.0.0')
 )

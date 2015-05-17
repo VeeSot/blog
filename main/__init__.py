@@ -1,16 +1,30 @@
+import socket
+
 from os.path import dirname, abspath
+import pymongo
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.assets import Environment, Bundle
 from third_party import COUNTERS
 
+if socket.gethostname() == 'localhost':
+    DEBUG = True
+else:
+    DEBUG = False
 
 app = Flask(__name__)
 ROOT_PATH = dirname(dirname(abspath(__file__)))  # Main root dir
+
+
 # DB settings
 app.config["MONGODB_SETTINGS"] = {'DB': "blog"}
-app.config["SECRET_KEY"] = "9885c535484942f17e08370161a108b0"
+app.config["SECRET_KEY"] = "secret_key"
 db = MongoEngine(app)
+# connection through pymogo for low-level request and actions(MongoEngine not capable of everything)
+connection = pymongo.MongoClient()
+connection_db = connection.blog
+
+
 # Setting for static files
 STATIC_ROOT = ROOT_PATH + '/static'
 assets = Environment(app)
@@ -68,6 +82,6 @@ if __name__ == '__main__':
 
 # rewrites global setting from local param
 try:
-    from .local_setting import *
+    from .local_settings import *
 except ImportError:
     pass

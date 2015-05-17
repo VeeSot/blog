@@ -1,5 +1,4 @@
-from collections import namedtuple
-import pymongo
+from service.views import instance_to_dict
 from tags.models import Tag
 
 __author__ = 'veesot'
@@ -7,7 +6,7 @@ __author__ = 'veesot'
 import datetime
 
 from flask import url_for
-from main import db
+from main import db, connection_db
 
 
 class Post(db.DynamicDocument):
@@ -15,7 +14,29 @@ class Post(db.DynamicDocument):
     title = db.StringField(max_length=255, required=True)
     slug = db.StringField(max_length=255, required=True)
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
-    tags = db.ListField(db.EmbeddedDocumentField('Tag'))
+    tags = db.ListField(db.ObjectIdField('ObjectId'))
+
+    def get_post_dict(self, partial_content=None):
+        """Представление в ввиде словаря.Может использоваться в JSON - ответе"""
+        if not partial_content:  # Если нужна информация вся
+            return instance_to_dict(self, 'created_at', 'title', 'slug', 'body')
+        else:
+            return instance_to_dict(self, *partial_content)
+
+    def get_comments(self, public=True):
+        posts = connection_db.post
+        comments = posts.aggregate([{'$unwind': "$comments"},
+                                    {'$match': {"comments.public": public, "title": self.title}},
+                                    {'$project': {'_id': 0, 'author': "$comments.author",
+                                                  'body': "$comments.body",
+                                                  'created_at': "$comments.created_at"}}])['result']
+        return comments
+
+    def add_comment(self, meta_info):
+        comment = Comment(**meta_info)
+        self.comments.append(comment)
+        self.save()
+        return comment.get_comment_dict()
 
     def get_absolute_url(self):
         return url_for('post', kwargs={"slug": self.slug})
@@ -23,42 +44,32 @@ class Post(db.DynamicDocument):
     def __unicode__(self):
         return self.title
 
-    @classmethod
-    def get_json_with_field(cls, *args):
-        """"
-        Возвращает json-представление только с выбраными полями
-        Args:args(tuple): Кортеж со строковыми представлениями названий полей
-        """
-        json_present = []
-        all_posts = cls.objects
-        for post in all_posts:
-            listing = {}
-            for field in args:
-                try:
-                    # Используем принудительное преобразование в строку,чтобы избежать проблем с конвертацией в json
-                    listing[field] = str(post[field])
-                except KeyError:  # Иногда бывает что ключа нет в определеном экземпляре.Нестрогая модель Mongo DB
-                    listing[field] = ''
-            json_present.append(listing)
-        return json_present
-
     @property
     def post_type(self):
         return self.__class__.__name__
 
-    def update_tags(self, tags):
-        self.tags = []
+    @classmethod
+    def update_tags(cls, post, tags):
+        post.tags = []
 
         for tag in tags:
-            new_tag = Tag()
-            new_tag.title = tag
-            self.tags.append(new_tag)
-            # After add tag to post - make this tag global
-            tag_exists = Tag.objects.filter(title=tag)
-            if not tag_exists:
-                Tag(title=tag).save()
+            if Tag.objects.filter(title=tag):
+                new_tag = Tag.objects.get(title=tag)
+            else:
+                new_tag = Tag(title=tag).save()
 
-        self.save()
+            post.tags.append(new_tag.id)
+
+        post.save()
+
+    @classmethod
+    def get_title_tags(cls, post):
+        """Return tags title from Tags"""
+        tags = []
+        tags_id = post.tags
+        for tag_ig in tags_id:
+            tags.append(Tag.objects.get(id=tag_ig).title)
+        return tags
 
     meta = {
         'allow_inheritance': True,
@@ -74,8 +85,23 @@ class Comment(db.EmbeddedDocument):
     body = db.StringField(verbose_name="Комментарий", required=True)
     public = db.BooleanField(verbose_name="Опубликовать", default=False)
 
+    def get_comment_dict(self):
+        return instance_to_dict(self, 'created_at', 'author', 'body')
+
     @classmethod
-    def get_meta_info_comment(cls, created_at):
+    def get_post_by_time_create_comment(cls, created_at):
+
+        # Timestamp in canonic view
+        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%dT%H:%M:%S.%f")
+
+        # establish a connection to the database
+        posts = connection_db.post
+        meta_info_comment = posts.find_one({"comments.created_at": created_at}, {"_id": 0, 'title': 1, 'comments.$': 1})
+        post = Post.objects.get(title=meta_info_comment['title'])
+        return post
+
+    @classmethod
+    def get_by_time_create(cls, created_at):
         """"
         Args:
             post (Post): Post for comment
@@ -84,57 +110,38 @@ class Comment(db.EmbeddedDocument):
         Returns:
             Comment: needed comment
         """
-        # Timestamp in canonic view
-        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
-
-        # establish a connection to the database
-        connection = pymongo.MongoClient("mongodb://localhost")
-        posts = connection.blog.post
-        meta_info_comment = posts.find_one({"comments.created_at": created_at}, {"_id": 0, 'title': 1, 'comments.$': 1})
-        post = Post.objects.get(title=meta_info_comment['title'])
-
+        post = cls.get_post_by_time_create_comment(created_at)
         for comment in post.comments:
             if comment.created_at == created_at:
-                meta_info = namedtuple('meta_info_comment', 'post comment')
-                meta_info_comment = meta_info(post, comment)
-                return meta_info_comment
+                return comment
 
     @classmethod
-    def delete(cls, created_at):
+    def delete(cls, post, created_at):
         """"
         Removing specified comment
         Args:
             created_at (str): timestamp created comment
         """
-        meta_info_comment = cls.get_meta_info_comment(created_at)
-
-        comment_for_remove = meta_info_comment.comment
-        post = meta_info_comment.post
-
         comments = post.comments
         for comment in comments:
-            if comment == comment_for_remove:
+            if comment.created_at == created_at:
                 comments.remove(comment)
                 post.save()
                 return
 
     @classmethod
-    def change_public_status(cls, created_at):
+    def change_public_status(cls, post, created_at):
         """"
         Public|un-public comment
         Args:
             created_at (str): timestamp created comment
         """
-
-        meta_info_comment = cls.get_meta_info_comment(created_at)
-        comment_for_change = meta_info_comment.comment
-        post = meta_info_comment.post
         comments = post.comments
         for comment in comments:
-            if comment == comment_for_change:
+            if comment.created_at == created_at:
                 comment.public = not comment.public  # Inverse current state
                 post.save()
-                return
+                return comment
 
     def __unicode__(self):
         return self.created_at

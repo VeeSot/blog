@@ -1,10 +1,10 @@
+import asjson
 from flask.views import MethodView
 from functools import wraps
 from flask.ext.mongoengine.wtf import model_form
 from flask import request, render_template, Blueprint, redirect, abort, session, make_response
 from .models import User, SessionStorage
 from mongoengine import DoesNotExist
-
 
 auth = Blueprint('auth', __name__, template_folder='templates')
 
@@ -51,8 +51,15 @@ class UserAuth(MethodView):
 
     @staticmethod
     def is_admin():
-        if 'session_id' in request.cookies:
-            session_id = request.cookies['session_id']
+        # Выуживаем куки из различных мест,т.к. отправлять могут в виде атрибута  заголовков
+        cookies = request.cookies
+        if not cookies:  # Ничего не нашли на первой иттерации.Попробуем вытащить из заголовка
+            try:
+                cookies = asjson.loads(request.headers['Set-Cookie'])
+            except KeyError:
+                pass
+        if 'session_id' in cookies:
+            session_id = cookies['session_id']
             return bool(SessionStorage.objects.filter(session_key=session_id))
         else:
             return False

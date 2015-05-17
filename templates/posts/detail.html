@@ -7,14 +7,17 @@
     {% assets "posts" %}
         <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
     {% endassets %}
+    {% assets "hljs" %}
+        <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+    {% endassets %}
 {% endblock %}
 {% block page_header %}
     <article>
-        <h1>{{ post.title }}</h1>
+        <h1 id="title">{{ post.title }}</h1>
         <time datetime="{{ post.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
         <div class="body">{{ post.body|safe }}</div>
-        {% for tag in post.tags %}
-            <a href="{{ url_for("tags.detail", title=tag.title) }}" class="btn">{{ tag.title }}</a>
+        {% for tag in tags %}
+            <a href="{{ url_for("tags.detail", title=tag) }}" class="btn">{{ tag}}</a>
         {% endfor %}
     </article>
 {% endblock %}
@@ -34,9 +37,9 @@
                 <div class="body">{{ comment.body }}</div>
             {% endif %}
         {% if admin %}
-            <input id="{{ comment.created_at }}" onclick="publicComment(this)"
+            <input id="{{ comment.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f') }}" onclick="publicComment(this)"
                    value="{% if not comment.public %}Public{% else %}Un-public{% endif %}" type="button">
-            <input id="{{ comment.created_at }}" onclick="deleteComment(this)"
+            <input id="{{ comment.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f') }}" onclick="deleteComment(this)"
                    value="Delete" type="button">
         {% endif %}
         </div>
@@ -51,6 +54,8 @@
     </form>
 {% endblock %}
 {% block js_footer %}
+    <script src="/static/js/highlight.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
     {% for counter in config.COUNTERS %}
         {{ counter|safe }}
     {% endfor %}
