@@ -9,7 +9,7 @@ posts = Blueprint('posts', __name__, template_folder='templates')
 
 class PostList(MethodView):
     def get(self):
-        posts = Post.objects.all()
+        posts = Post.objects.filter(public=True)  # Only public posts, no draft
         return render_template('posts/list.html', posts=posts)
 
 
@@ -23,7 +23,7 @@ class PostDetail(MethodView):
         tags = Post.get_title_tags(post)
 
         context = {
-            "tags":tags,
+            "tags": tags,
             "post": post,
             "form": form,
             "admin": admin

@@ -1,3 +1,4 @@
+from flask.ext.mongoengine import BaseQuerySet
 from service.views import instance_to_dict
 from tags.models import Tag
 
@@ -15,6 +16,7 @@ class Post(db.DynamicDocument):
     slug = db.StringField(max_length=255, required=True)
     comments = db.ListField(db.EmbeddedDocumentField('Comment'))
     tags = db.ListField(db.ObjectIdField('ObjectId'))
+    public = db.BooleanField(verbose_name="Public post", default=False)
 
     def get_post_dict(self, partial_content=None):
         """Представление в ввиде словаря.Может использоваться в JSON - ответе"""

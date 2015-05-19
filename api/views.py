@@ -84,7 +84,7 @@ class Post(Api):
             if 'limit' in request.args:
                 limit = int(request.args['limit'])
 
-        posts = list(BlogPost.objects.limit(limit).skip(offset))
+        posts = list(BlogPost.objects.filter(public=True).limit(limit).skip(offset))
         if order_by:
             posts.sort(key=operator.attrgetter(*order_by))
 
@@ -101,8 +101,12 @@ class Post(Api):
         """
         try:
             post = BlogPost.objects.get(title=title)
-            response = post.get_post_dict(partial_content)
-            code = status.HTTP_200_OK
+            if post.public:  # Если пост допущен к публикации.
+                response = post.get_post_dict(partial_content)
+                code = status.HTTP_200_OK
+            else:  # Если запрашивают неопубликованый,но существующий пост
+                response = Api.handler_403(class_post)
+                code = status.HTTP_403_FORBIDDEN
         except DoesNotExist:
             response = Api.handler_404(class_post, title)
             code = status.HTTP_404_NOT_FOUND
