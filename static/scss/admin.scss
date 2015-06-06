@@ -15,4 +15,25 @@
   .meta{
     text-align: left;
   }
+  .public,.un_public{
+      border: none;
+      width: 80px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 1.1em;
+      border-radius: 0.1em;
+      color: #ffffff;
+      margin: 10px 10px 10px 0px;
+      padding: 10px;
+      display: inline-block;
+  }
+  .public{
+    background: rgb(51, 201, 99);
+  }
+  .un_public{
+    background: #EC817F;
+  }
+
+
 }
