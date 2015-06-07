@@ -1,3 +1,3 @@
 //Staring our app
-new app.AppView;
-new app.TagListView
+new app.PostListView;
+new app.TagListView;

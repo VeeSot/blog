@@ -11,7 +11,7 @@ app.PostView = Backbone.View.extend({
 });
 
 
-app.AppView = Backbone.View.extend({
+app.PostListView = Backbone.View.extend({
     initialize: function () {
         this.listenTo(app.Posts, 'add', this.addOne);
         this.listenTo(app.Posts, 'reset', this.addAll);

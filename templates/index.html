@@ -11,28 +11,33 @@
 <noscript>
     <div class="error">Sorry.This site version don't work without enabled JavaScript</div>
 </noscript>
+<nav>
+    <a href="/">На главную</a>
+    <a href="/about/">О проекте</a>
+    <a href="/rss/">RSS</a>
+    <a href="/contacts/">Контакты</a>
+</nav>
 <div class="container">
-    <h1>Posts:</h1>
+    <h1>Last posts:</h1>
     <ul id="posts">
     </ul>
     <ul id="tags">
     </ul>
 </div>
 <script type="text/x-underscore-template" id="post-preview">
-    <% if (img !== '')
-    {  %><img src="<%- img %>" alt="<%- title %>"><%  }
-    else
-    { %> <img src="/static/img/nof.png" alt="Image not found"> <% }  %>
+    <% if (img !== ''){  %><img src="<%- img %>" alt="<%- title %>"><%  }else{ %> <img src="/static/img/nof.png"  alt="Image not found"> <% }%>
     <div class="meta">
-        <h2><a href="posts/<%- slug %>"><%- title %></a></h2>
-        <div class="slug">
-            <%- slug %>
-        </div>
-        <time datetime="<%- created_at %>"><%- moment(created_at).format("MMMM,Do YYYY, h:mm:ss a") %></time>
+        <h2>
+            <a href="posts/<%- slug %>">
+                <%- title %>
+            </a>
+        </h2>
+        <%- slug %><br>
+        <time datetime="<%- created_at %>"><%- moment(created_at).format("MMMM,Do YYYY, HH:mm") %></time>
     </div>
 </script>
 <script type="text/x-underscore-template" id="tag">
-        <a class="btn" href="tags/<%- title %>"><%- title %></a>
+    <a class="btn" href="tags/<%- title %>"><%- title %></a>
 </script>
 <script src="../static/js/lib/jquery.js"></script>
 <script src="../static/js/lib/underscore.js"></script>
