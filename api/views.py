@@ -1,13 +1,14 @@
 import datetime
 
 import operator
-
 import asjson
 from flask.ext.api import status
 from mongoengine import ValidationError, DoesNotExist
 from auth.views import UserAuth
 from flask import Blueprint, request, Response
 from posts.models import BlogPost, Comment
+import random
+from tags.models import Tag as post_tags
 from werkzeug.exceptions import Forbidden
 
 class_post = BlogPost.__base__.__name__.lower()
@@ -229,3 +230,41 @@ class ApiComment:
             return Response(asjson.dumps(response), mimetype='application/json'), status.HTTP_204_NO_CONTENT
         else:
             return Response(asjson.dumps(response), mimetype='application/json'), status.HTTP_403_FORBIDDEN
+
+
+class Tag(Api):
+    @staticmethod
+    @api.route("/tags/", methods=['GET'])
+    def dispatcher_tags(title=None):
+        try:
+            if title is None:
+                return Tag.index()
+        except ValueError as error:
+            response = Api.handler_500(error)
+            code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return Response(asjson.dumps(response), mimetype='application/json'), code
+
+    @classmethod
+    def index(cls, count=None, random_order=False):
+        """
+        Return tags list
+        """
+        if request.query_string:
+            # Проверки входных данных
+            if 'count' in request.args and request.args['count'].isdigit():
+                count = int(request.args['count'])
+            if 'random_order' in request.args and request.args['random_order'] == 'true':
+                random_order = True
+
+        tags = list(post_tags.objects.all())
+
+        if random_order and count < len(tags):
+            # Если нам нужен "случайный" набор тегов и  тегов запросили меньше чем есть - перемешаем их
+            random.shuffle(tags)
+            tags = tags[:count]  # Усечение списка тегов
+
+        response = []
+        for tag in tags:
+            tag_meta_info = tag.get_tag_dict()
+            response.append(tag_meta_info)
+        return Response(asjson.dumps(response), mimetype='application/json')  # jsonify - don correct fot this case!

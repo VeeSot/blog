@@ -7,6 +7,11 @@ from .models import Post, Comment
 posts = Blueprint('posts', __name__, template_folder='templates')
 
 
+class Posts(MethodView):
+    def get(self):
+        return render_template('index.html')
+
+
 class PostList(MethodView):
     def get(self):
         posts = Post.objects.filter(public=True)  # Only public posts, no draft
@@ -50,7 +55,7 @@ class PostDetail(MethodView):
             return redirect(url_for('posts.detail', slug=slug))
         return render_template('posts/detail.html', **context)
 
-
 # Register the urls
 posts.add_url_rule('/', view_func=PostList.as_view('list'))
+posts.add_url_rule('/posts', view_func=Posts.as_view('posts'))
 posts.add_url_rule('/post/<slug>/', view_func=PostDetail.as_view('detail'))

@@ -1,9 +1,13 @@
 from collections import namedtuple
 from main import db, connection_db
+from service.views import instance_to_dict
 
 
 class Tag(db.DynamicDocument):
     title = db.StringField(max_length=50, required=True)
+
+    def get_tag_dict(self):
+        return instance_to_dict(self, 'title')
 
     def get_meta_info(self):
         """"
