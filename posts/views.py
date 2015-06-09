@@ -3,8 +3,14 @@ from flask import Blueprint, request, redirect, render_template, url_for, flash
 from flask.views import MethodView
 from flask.ext.mongoengine.wtf import model_form
 from .models import Post, Comment
+from werkzeug.exceptions import abort
 
 posts = Blueprint('posts', __name__, template_folder='templates')
+
+
+class Posts(MethodView):
+    def get(self):
+        return render_template('index.html')
 
 
 class PostList(MethodView):
@@ -18,6 +24,10 @@ class PostDetail(MethodView):
 
     def get_context(self, slug):
         post = Post.objects.get_or_404(slug=slug)
+
+        if not post.public:  # User request hidden post
+            abort(403)
+
         form = self.form(request.form)
         admin = UserAuth.is_admin()
         tags = Post.get_title_tags(post)
@@ -50,7 +60,7 @@ class PostDetail(MethodView):
             return redirect(url_for('posts.detail', slug=slug))
         return render_template('posts/detail.html', **context)
 
-
 # Register the urls
 posts.add_url_rule('/', view_func=PostList.as_view('list'))
+posts.add_url_rule('/posts', view_func=Posts.as_view('posts'))
 posts.add_url_rule('/post/<slug>/', view_func=PostDetail.as_view('detail'))

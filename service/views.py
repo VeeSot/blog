@@ -16,7 +16,7 @@ def sitemap():
     """Generate sitemap.xml"""
     from posts.models import BlogPost
 
-    posts = BlogPost.objects.all()
+    posts = BlogPost.objects.filter(public=True)
     # Configure jinja for internal templates
     env = Environment(autoescape=True, extensions=['jinja2.ext.i18n'],
                       loader=FileSystemLoader(os.path.join(ROOT_PATH, 'templates')))

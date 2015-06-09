@@ -3,47 +3,118 @@ $lightGrey: #e0e0e0;
 $thirdColor: #62ABDF;
 
 article {
+  border-top: 3px solid $thirdColor;
+  border-left: 1px solid $lightGrey;
+  border-right: 1px solid $lightGrey;
+  border-bottom: 1px solid $lightGrey;
+  h1 {
+    display: inline-block;
+  }
+}
+
+.comment {
+  border: 1px solid $lightGrey;
+}
+
+article, .comment {
+  background: $backGroundColor;
+  margin-bottom: 20px;
+  padding: 10px;
+  overflow-wrap: normal;
+  word-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  time {
+    float: right;
+  }
+  img {
+    width: 200px;
+    height: 150px;
+  }
+  .body {
+    border-top: $lightGrey 2px solid;
+    padding: 10px;
+    background: #ffffff;
+    margin-top: 10px;
+  }
+  .overview {
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 10px;
+    h1 {
+      display: block;
+    }
+  }
+}
+
+ul#posts {
+  padding: 0;
+  width: 83%;
+  display: inline-block;
+  li.preview {
     border-top: 3px solid $thirdColor;
     border-left: 1px solid $lightGrey;
     border-right: 1px solid $lightGrey;
     border-bottom: 1px solid $lightGrey;
-    h1{
-      display: inline-block;
-    }
-  }
-.comment {
-    border: 1px solid $lightGrey;
-  }
-article, .comment {
     background: $backGroundColor;
-    margin-bottom: 20px;
-    padding: 10px;
+    margin-bottom: 1%;
+    padding: 1%;
     overflow-wrap: normal;
     word-wrap: break-word;
     word-break: normal;
     hyphens: manual;
+    list-style: none;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     -ms-hyphens: auto;
-    time {
-      float: right;
-    }
-    img{
-      width: 200px;
-      height: 150px;
-    }
-    .body {
-      border-top: $lightGrey 2px solid;
-      padding: 10px;
-      background: #ffffff;
-      margin-top: 10px;
-    }
-    .overview{
-      display:inline-block;
+    .meta {
+      width: 83%;
+      display: inline-block;
       vertical-align: top;
-      padding-left: 10px;
-      h1{
+      padding-left: 1%;
+      h2 {
         display: block;
       }
     }
+    a {
+      display: inline-block;
+    }
+    img {
+      width: 15%;
+    }
   }
+}
+
+ul#tags {
+   overflow-wrap: normal;
+    word-wrap: break-word;
+    word-break: normal;
+    hyphens: manual;
+    list-style: none;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+  li.tag {
+    display: inherit;
+    font-size: 0.8em;
+    a .btn {
+        display: inline;
+
+    }
+  }
+  padding: 1%;
+  margin-left: 1%;
+  vertical-align: top;
+  display: inline-block;
+  border-top: 3px solid $thirdColor;
+  border-left: 1px solid $lightGrey;
+  border-right: 1px solid $lightGrey;
+  border-bottom: 1px solid $lightGrey;
+  min-height: 150px;
+  width: 12%;
+  background: $backGroundColor;
+
+}

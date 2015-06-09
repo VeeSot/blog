@@ -16,7 +16,7 @@ def make_external(url):
 class Rss(MethodView):
     def get(self):
         feed = AtomFeed('Записки программиста', feed_url=request.url, url=request.url_root)
-        posts = BlogPost.objects.all()
+        posts = BlogPost.objects.filter(public=True)
         for post in posts:
             feed.add(post.title, post.slug,
                      content_type='html',
