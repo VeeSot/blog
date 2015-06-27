@@ -1,4 +1,4 @@
-from flask.ext.mongoengine import BaseQuerySet
+from werkzeug.exceptions import abort
 from service.views import instance_to_dict
 from tags.models import Tag
 
