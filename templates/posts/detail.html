@@ -2,7 +2,8 @@
 {% block title %}{{ post.title }}{% endblock %}
 {% block js_header %}
     <script src="/static/js/posts/list.js"></script>
-    <script src="/static/js/jquery.js"></script>{% endblock %}
+    <script src="/static/js/lib/jquery.js"></script>
+{% endblock %}
 {% import "_forms.html" as forms %}
 {% block css_header %}
     {% assets "posts" %}
