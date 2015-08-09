@@ -1,3 +1,4 @@
+from operator import itemgetter
 from flask import Blueprint, render_template
 from flask.views import MethodView
 from .models import Tag
@@ -20,7 +21,8 @@ class DetailTag(MethodView):
         posts = []
         for post in meta_info_tag.posts:
             posts.append(Post.objects.get(title=post['title']))
-        return render_template('tags/detail.html', tag=tag, posts=posts)
+        posts_by_time = sorted(posts, key=itemgetter('created_at'))
+        return render_template('tags/detail.html', tag=tag, posts=posts_by_time)
 
 
 # Register the urls
