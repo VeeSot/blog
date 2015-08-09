@@ -21,7 +21,7 @@ class DetailTag(MethodView):
         posts = []
         for post in meta_info_tag.posts:
             posts.append(Post.objects.get(title=post['title']))
-        posts_by_time = sorted(posts, key=itemgetter('created_at'))
+        posts_by_time = sorted(posts, key=itemgetter('created_at'),reverse=True)
         return render_template('tags/detail.html', tag=tag, posts=posts_by_time)
 
 
