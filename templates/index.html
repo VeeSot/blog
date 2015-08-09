@@ -28,7 +28,19 @@
     <% if (img !== ''){  %><img src="<%- img %>" alt="<%- title %>"><%  }else{ %> <img src="/static/img/nof.png"  alt="Image not found"> <% }%>
     <div class="meta">
         <h2>
-            <a href="posts/<%- slug %>">
+            <a class="post_link" id="<%- slug %>" href="#">
+                <%- title %>
+            </a>
+        </h2>
+        <%- slug %><br>
+        <time datetime="<%- created_at %>"><%- moment(created_at).format("MMMM,Do YYYY, HH:mm") %></time>
+    </div>
+</script>
+<script type="text/x-underscore-template" id="post-detail">
+    <% if (img !== ''){  %><img src="<%- img %>" alt="<%- title %>"><%  }else{ %> <img src="/static/img/nof.png"  alt="Image not found"> <% }%>
+    <div class="meta">
+        <h2>
+            <a class="post_link" id="<%- slug %>" href="#">
                 <%- title %>
             </a>
         </h2>

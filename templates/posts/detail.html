@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% block description %}{{ post.slug }}{% endblock %}
+{% block keywords %}{% with total=post.tags|length %}{% for tag in tags %}{{ tag }}{%- if tag!=tags[total-1] %},{%- endif -%}{% endfor %}{% endwith %}{% endblock %}
 {% block title %}{{ post.title }}{% endblock %}
 {% block js_header %}
     <script src="/static/js/posts/list.js"></script>
@@ -15,11 +17,18 @@
 {% endblock %}
 {% block page_header %}
     <article>
-        <h1 id="title">{{ post.title }}</h1>
-        <time datetime="{{ post.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</time>
+        {% if post.img %}
+            <img src="{{ post.img }}" alt="{{ post.title }}">
+        {% else %}
+            <img src="/static/img/nof.png" alt="Image not found">
+        {% endif %}
+        <div class="overview">
+            <h1>{{ post.title }}</h1>
+        </div>
+        <time datetime="{{ post.created_at.strftime('%Y-%m-%dT%H:%MZ') }}">{{ post.created_at.strftime('%Y-%m-%d %H:%M ') }}</time>
         <div class="body">{{ post.body|safe }}</div>
         {% for tag in tags %}
-            <a href="{{ url_for("tags.detail", title=tag) }}" class="btn">{{ tag}}</a>
+            <a href="{{ url_for("tags.detail", title=tag) }}" class="btn">{{ tag }}</a>
         {% endfor %}
     </article>
 {% endblock %}
