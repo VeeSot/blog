@@ -15,7 +15,7 @@ eval(function (p, a, c, k) {
 ));
 
 function prepareXmlhttp(comment, method) {
-    var title = $('#title').html();
+    var title = $('.overview h1').html();
     var comment_time = comment.id;
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open(method, "/api/v1/posts/{0}/comments/{1}".format(title, comment_time), true);
